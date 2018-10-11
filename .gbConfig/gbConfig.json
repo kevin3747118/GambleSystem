@@ -1,0 +1,16 @@
+{
+  "PORT_GB": 8787,
+
+  "HOST_IP": "127.0.0.1",
+
+  "GB_DB_IP": "127.0.0.1",
+  "GN_DB_PORT": 3306,
+  "GB_DB_NAME": "alzk",
+  "GB_DB_USER": "alzk",
+  "GB_DB_PWD": "alzk",
+
+  "DBPOOL_MAX": 10,
+
+  "SPORTS_CATEGORY": "https://www.sportslottery.com.tw/web/services/rs/betting/tournamentGames/15102/0/t-4091.json?groups=384&locale=tw&brandId=defaultBrand&channelId=1",
+  "": ""
+}

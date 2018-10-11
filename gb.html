@@ -1,0 +1,351 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script src='/javascripts/jquery-3.1.1.min.js'></script>
+<link rel="stylesheet" href="/jquery-ui-1.12.1/jquery-ui.css">
+<script src="/jquery-ui-1.12.1/jquery-ui.js"></script>
+
+  <!-- Material Design fonts -->
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
+
+  <!-- Bootstrap -->
+<script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<link href="/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Material Design -->
+<link rel="stylesheet" type="text/css" href="/bootstrap-material-design/dist/css/bootstrap-material-design.css">
+<link rel="stylesheet" type="text/css" href="/bootstrap-material-design/dist/css/ripples.min.css">
+
+<script src="/bootstrap-material-design/dist/js/ripples.min.js"></script>
+<script src="/bootstrap-material-design/dist/js/material.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/c_common.css">
+<script src="/c_common.js"></script>
+<style>
+    .panel-heading, .panel-footer, .panel-body {
+        padding: 0px;
+        margin: 0px;
+        width: 100%;
+    }
+
+    .btn {
+        padding: 5px;
+        margin: 2px 5px 2px 2px;
+        text-transform: none;
+    }
+
+    .alzk-alert {
+            position: fixed;
+            right: 20%;
+            bottom: 0px;
+            z-index: 2001;
+            width: auto;
+            height: auto;
+            display: none; 
+            border-radius: 3px;   
+            padding: 10px;
+    }
+
+    input {
+        color: black;
+        background-color: white;
+    }
+</style>
+
+<script>
+    function setupTestCase() {
+        $.get("/simuApi/setupTestCase", 
+            {
+                testCaseName: $("#testCaseName").val().trim(),
+                vLockCount: parseInt($("#vLockCount").val())
+            },
+            function(data, status) {
+                if (status == "success") {
+                    if (data.status == "ok") {
+                        refreshPage(data.testCase);
+                        showAlert("Test Case Setup OK !");
+                    } else
+                        showAlert("Error:"+data.errorText, "red");
+                }
+            }            
+        )                
+    }
+
+    function endTestCase() {
+        $.get("/simuApi/endTestCase", {},
+            function(data, status) {
+                if (status == "success") {
+                    if (data.status == "ok") {
+                        refreshPage(data.testCase);
+                        showAlert("Test Case ended !");
+                    } else
+                        showAlert("Error:"+data.errorText, "red");
+                }
+            }            
+        )                        
+    }
+
+    function refreshLockInfo() {
+        $.get("/simuApi/getTestCaseInfo", {},
+            function(data, status) {
+                if (status == "success") {
+                    if (data.status == "ok") {
+                        refreshPage(data.testCase);
+                        showAlert("OK !");
+                    } else
+                        showAlert("Error:"+data.errorText, "red");
+                }
+            }            
+        )                
+    }
+    
+    function startTest() {
+        const qObj={};
+        $("#execute input").each((i,e)=>{
+            qObj[$(e).attr("id")] = parseInt($(e).val().trim());
+        })
+        $.get("/simuApi/startTest", qObj,
+            function(data, status) {
+                if (status == "success") {
+                    if (data.status == "ok") {
+                        refreshPage(data.testCase);
+                        showAlert("Test Case Started !");
+                    } else
+                        showAlert("Error:"+data.errorText, "red");
+                }
+            }            
+        )                                
+    }
+
+    function stopTest() {
+        $.get("/simuApi/stopTest", {},
+            function(data, status) {
+                if (status == "success") {
+                    if (data.status == "ok") {
+                        refreshPage(data.testCase);
+                        showAlert("Test Case Stopped !");
+                    } else
+                        showAlert("Error:"+data.errorText, "red");
+                }
+            }            
+        )                                
+    }
+
+    function showVLockList(tc) {
+        $("#vLockSelect").empty();
+        $("#vLockSelect").append('<option value="" selected>select a vLock</option>');
+        tc.vLocks.forEach((v,i)=>{
+            $("#vLockSelect").append(`<option value='${JSON.stringify(v)}'>${v.areaType}-${v.macAddr}</option>`);
+        })
+    }
+
+    function showVlockInfo() {
+        const vLock=JSON.parse($("#vLockSelect").val());
+        $("#vLockInfo").html(`${JSON.stringify(vLock,null,' ')}`);
+    }
+
+    function refreshPage(tc) {
+        $("#setup input").prop("readonly",true);
+        $("#setup a").attr("disabled","");
+        $("#setup a").attr("onclick","");
+        $("#execute input").prop("readonly",true);
+        $("#execute a").attr("disabled","");
+        $("#execute a").attr("onclick","");
+        $("#vLockInfo").html('');
+        $("#getVLockCountsBtn").removeAttr("disabled");
+        $("#getVLockCountsBtn").attr("onclick","getVLockCounts()"); 
+        showVLockList(tc);
+        if (tc.testCaseName != '') {
+            $(".panel-body").slideDown("slow"); 
+            $("#testCaseName").val(tc.testCaseName);
+            $("#vLockCount").val(tc.vLocks.length);
+            if (tc.status == 0) { // stopped
+                $("#endBtn").removeAttr("disabled"); // can end, can't edit
+                $("#endBtn").attr("onclick","endTestCase()");
+                $("#relinkBtn").removeAttr("disabled"); // can end, can't edit
+                $("#relinkBtn").attr("onclick","relinkVLocks()");
+                $("#reportBtn").removeAttr("disabled"); // can end, can't edit
+                $("#reportBtn").attr("onclick","getTestReport()");
+                $("#startBtn").removeAttr("disabled"); // can start
+                $("#startBtn").attr("onclick","startTest()"); //
+                $("#execute input").prop("readonly",false); // can edit params
+                $("#endBtn").focus();
+                $("#execute input").each((i,e)=>{
+                    if (tc.runParams && tc.runParams[$(e).attr("id")])
+                        $(e).val(tc.runParams[$(e).attr("id")]);
+                    // else
+                    //     $(e).val($(e)[0].defaultValue)
+                })
+            } else { // running
+                $("#stopBtn").removeAttr("disabled"); // can stop
+                $("#stopBtn").attr("onclick","stopTest()"); // 
+                $("#stopBtn").focus();
+            }
+        } else {  // not setup yet 
+            $(".panel-body").slideUp("slow"); 
+            $("body input").each((i,e) => { 
+                $(e).val($(e)[0].defaultValue);
+            });
+            $("#setupBtn").removeAttr("disabled"); // can setup
+            $("#setupBtn").attr("onclick","setupTestCase()"); // can setup
+            $("#setup input").prop("readonly",false); // can edit
+            $("#setupBtn").focus();            
+        }
+    }
+
+    function relinkVLocks() {
+        $.get("/simuApi/relinkVLocks", {},
+            function(data, status) {
+                if (status == "success") {
+                    if (data.status == "ok") {
+                        refreshPage(data.testCase);
+                        showAlert("Vlocks Relinked !");
+                    } else
+                        showAlert("Error:"+data.errorText, "red");
+                }
+            }            
+        )                                
+    }
+
+    function getTestReport() {
+        $.get("/simuApi/getTestReport", {},
+            function(data, status) {
+                if (status == "success") {
+                    if (data.status == "ok") {
+                        refreshPage(data.testCase);
+                        showAlert("Report done !");
+                        $("#vLockInfo").html(`
+<h4>Total interrupted sessions : ${data.totalInterruptSessions}
+Total completed sessions : ${data.totalCompleteSessions}
+Total sessions : ${data.totalInterruptSessions+data.totalCompleteSessions}
+Total sessions process time (ms): ${data.totalTime}
+------------------------------------------------------------
+Average process time per lock session (ms):${parseInt(data.totalTime/(data.totalInterruptSessions+data.totalCompleteSessions))}
+------------------------------------------------------------
+Total vLocks : ${data.totalVLocks}
+Run Parameters : ${JSON.stringify(data.runParams,null,' ')}
+</h4>`);                        
+                    } else
+                        showAlert("Error:"+data.errorText, "red");
+                }
+            }            
+        )                                
+    }
+
+    function getVLockCounts() {
+        $.get("/simuApi/getAvailableVLocks", {},
+            function(data, status) {
+                if (status == "success") {
+                    if (data.status == "ok") {
+                        showAlert("Available locks count = "+data.vLockCount);
+                    } else
+                        showAlert("Error:"+data.errorText, "red");
+                }
+            }            
+        )                                
+    }
+
+    $("document").ready( function () {
+        refreshLockInfo();
+    })
+</script>
+
+</head>
+<body>
+
+<nav class="navbar navbar-info" style="padding:0px;margin:0px">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">ALZK MF-Admin Lock Simulator</a>
+    </div>
+  </div>
+</nav>
+
+<div class="panel">
+    <div class="panel-heading">
+        <div id="setup">
+            <table><tbody>
+                <tr>
+                    <td>
+                        Test Case Name :
+                    </td><td>
+                        <input id="testCaseName" type="text" size=20 maxlength=15 value="">
+                    </td>
+                    <td>
+                        # of Virtual Locks:
+                    </td><td>
+                        <input id="vLockCount" type="number" value="1" min="1" max="100">
+                    </td>
+                    <td>
+                        <a id="setupBtn" href="#" class="btn btn-raised btn-success" onclick="setupTestCase()">Allocate VLocks</a>
+                        <a id="endBtn" href="#" class="btn btn-raised btn-danger" onclick="endTestCase()">Release VLocks</a>
+                        <a id="relinkBtn" href="#" class="btn btn-raised btn-warning" onclick="relinkVLocks()">Re-Link VLocks</a>
+                        <a id="getVLockCountsBtn" href="#" class="btn btn-raised btn-info" onclick="getVLockCounts()">Get VLock Counts</a>                    
+                    </td>
+                </tr>
+            </tbody></table>                
+        </div>
+    </div>
+    <div class="panel-body collapse">
+        <table width=100% border="1px solid black"><tbody>
+            <tr>
+                <td width=30% valign=top>
+                    <div id="execute">
+                        <a id="startBtn" href="#" class="btn btn-raised btn-success" onclick="startTest()">Start Test</a>
+                        <a id="stopBtn" href="#" class="btn btn-raised btn-danger" onclick="stopTest()">Stop Test</a>
+                        <a id="reportBtn" href="#" class="btn btn-raised btn-info" onclick="getTestReport()">Get Test Report</a>
+                        <table width=100%><tbody>
+                            <tr>
+                                <td>
+                                    First scan card delay (secs):
+                                    <input id="scanDelay" type="number" min="10" max="180" value="10">
+                                    <br>Lock kick-off Interval (secs):
+                                    <input id="kickOffInterval" type="number" min="5" max="60" value="10">
+                                    <br><br>e0 Event Interval (secs):
+                                    <br>G/R:<input id="e0IntervalG" type="number" min="10" max="300" value="180">
+                                    Pub:<input id="e0IntervalP" type="number" min="10" max="300" value="180">
+                                    Unit:<input id="e0IntervalU" type="number" min="10" max="300" value="180">
+                                    <br>scan card event Interval (secs):
+                                    <br>G/R:<input id="scanIntervalG" type="number" min="5" max="100" value="5">
+                                    Pub:<input id="scanIntervalP" type="number" min="5" max="100" value="5">
+                                    Unit:<input id="scanIntervalU" type="number" min="5" max="100" value="30">
+                                    <br>------------------------------------------------------------
+                                    <br>Card selection probability for scan card
+                                    <br> Note : % of Non-K : 100 - (k0+k1+k2)
+                                    <br>% of K0 :
+                                    <br>G/R:<input id="k0PercentG" type="number" min="0" max="100" value="30">
+                                    Pub:<input id="k0PercentP" type="number" min="0" max="100" value="30">
+                                    Unit:<input id="k0PercentU" type="number" min="0" max="100" value="30">
+                                    <br>% of K1 :
+                                    <br>G/R:<input id="k1PercentG" type="number" min="0" max="100" value="30">
+                                    Pub:<input id="k1PercentP" type="number" min="0" max="100" value="30">
+                                    Unit:<input id="k1PercentU" type="number" min="0" max="100" value="30">
+                                    <br>% of K2 :
+                                    <br>G/R:<input id="k2PercentG" type="number" min="0" max="100" value="30">
+                                    Pub:<input id="k2PercentP" type="number" min="0" max="100" value="30">
+                                    Unit:<input id="k2PercentU" type="number" min="0" max="100" value="30">                                    
+                                </td>
+                            </tr>
+                        </tbody></table>                
+                    </div>
+                </td>
+                <td width=10% valign=top>
+                    <a id="dumpBtn" href="#" class="btn btn-raised btn-default" onclick="refreshLockInfo()">Refresh Lock Info</a>
+                    <br><select id="vLockSelect" size=23 onchange="showVlockInfo()">
+                    </select>
+                </td>
+                <td valign=top>
+                    <pre id="vLockInfo" style="height:500px;overflow:auto"></pre>
+                </td>
+            </tr>    
+        </tbody></table>            
+    </div>
+    <div class="panel-footer">
+    </div>
+</div>
+
+</body>
+</html>
+

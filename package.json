@@ -1,0 +1,21 @@
+{
+  "name": "alzkAdminServer",
+  "version": "1.0.9",
+  "description": "",
+  "main": "alzk_main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.3",
+    "multer": "^1.2.1",
+    "mysql": "^2.16.0",
+    "promise": "^7.1.1",
+    "request": "^2.88.0",
+    "winston": "^2.2.0"
+  }
+}
