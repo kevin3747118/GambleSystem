@@ -4,10 +4,10 @@
   "HOST_IP": "127.0.0.1",
 
   "GB_DB_IP": "127.0.0.1",
-  "GN_DB_PORT": 3306,
-  "GB_DB_NAME": "alzk",
-  "GB_DB_USER": "alzk",
-  "GB_DB_PWD": "alzk",
+  "GB_DB_PORT": 3306,
+  "GB_DB_NAME": "gamble",
+  "GB_DB_USER": "root",
+  "GB_DB_PWD": "root123",
 
   "DBPOOL_MAX": 10,
 

@@ -3,6 +3,7 @@
 const mysql = require('mysql');
 
 const logger = require('./gb_logger').logger;
+const Login = require('./model/gb_login').Login;
 const util = require('./gbUtil');
 const express = require('express');
 const querystring = require('querystring');
@@ -20,60 +21,38 @@ gbRouter.use(function (req, res, next) {
   next();
 })
 
-// simuRouter.get("/getTestCaseInfo", function(req,res,next) {
-//     next();
-// })
+// gbRouter.post("/login", (res, res, next) => {
 
-// simuRouter.get("/setupTestCase", function(req,res,next) {
-//     const vLockCount = req.query.vLockCountG+req.query.vLockCountP+req.query.vLockCountU
-//     if (req.query.testCaseName=='' || req.query.vLockCountG<=0 
-//         || req.query.vLockCountP<=0 || req.query.vLockCountU<=0) {
-//         req.response.status = "error";
-//         req.response.errorText = "Invalid parameters!";
-//         next();
-//     } else {
-//         mUtil.execSimpleSQL(null,`select count(*) cnt from vlocks where testcasename='${req.query.testCaseName}'`, "SEL")
-//         .then((rows)=>{
-//             if (rows[0].cnt > 0)
-//                 return Promise.reject("Test Case Name in use, try another one!");
-//             return mUtil.execSimpleSQL(null,`update vlocks set testcasename='${req.query.testCaseName}' where testcasename=''`);
-//         }).then(()=>{
-//             return mUtil.execSimpleSQL(null, `select * from vlocks where testcasename='${req.query.testCaseName}'`, "SEL");
-//         }).then((vLocks)=>{
-//             if (vLocks.length < req.query.vLockCount) {
-//                 req.response.status = "error";
-//                 req.response.errorText = "Not enough Virtual Locks, only "+vLocks.length+" available !";
-//                 return Promise.resolve();
-//             } else {
-//                 const p=[];
-//                 TESTCASE.vLocks = [];
-//                 vLocks.forEach((v)=> {
-//                     if (TESTCASE.vLocks.length < req.query.vLockCount) {
-//                         TESTCASE.vLocks.push(new VLock({
-//                             macAddr : v.macaddr,
-//                             areaType : v.areatype,
-//                             status : v.status,
-//                             cardList : v.cardlist,
-//                             events : v.events,
-//                             settings : v.settings,
-//                             testCaseName : v.testcasename
-//                         }));
-//                     } else {
-//                         p.push(mUtil.execSimpleSQL(null, `update vlocks set testcasename='' where macaddr='${v.macaddr}'`));
-//                     }
-//                 })
-//                 return Promise.all(p);
-//             }
-//         }).then(()=>{
-//             TESTCASE.testCaseName = req.query.testCaseName;
-//             next();
-//         }).catch((err)=>{
-//             req.response.status = "error";
-//             req.response.errorText= JSON.stringify(err);
-//             next()
-//         })        
-//     }
-// })
+// });
+
+gbRouter.post("/createLogin", (req, res, next) => {
+  const newLogin = new Login(req.body);
+  Login.getLoginById(null, newLogin._id)
+    .then((aLogin) => {
+      if (aLogin === null) {
+        return newLogin.saveToDb(null, true);
+      } else {
+        req.response = {
+          status: "exist"
+        };
+        throw "exist";
+      }
+    })
+    .then((aLogin) => {
+      req.response = {
+        status: "ok"
+      };
+      next();
+    })
+    .catch((err) => {
+      if (err != "exist")
+        req.response = {
+          status: "error",
+          errorText: err
+        };
+      next();
+    })
+});
 
 gbRouter.get("/getGames", (req, res, next) => {
   const gameRead = fs.readFileSync('./game.json', 'utf8')

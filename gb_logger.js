@@ -14,7 +14,7 @@ alzk_logger.logger = new (winston.Logger)({
     }),
     new (winston.transports.File)({
       name: "default",
-      filename: logDir+`/dg-${util.dateToRtcStr(new Date())}.log`,
+      filename: logDir+`/gb-${util.dateToRtcStr(new Date())}.log`,
       timestamp: true,
       maxsize: 1024000,   // 1M
       maxFiles: 10,
