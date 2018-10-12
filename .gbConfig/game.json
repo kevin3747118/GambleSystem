@@ -1,39 +1,23 @@
 {
   "G1": {
     "game": {
-      "a": "Losanger Dodgers",
-      "h": "Milwaukee Brewers"
-    },
-    "id": {
-      "a": "LAD",
-      "h": "MIL"
+      "a": ["Losanger Dodgers", "LAD", "1.50"],
+      "h": ["Milwaukee Brewers", "MIL", "2.05"]
     },
     "competitors": {
-      "a": "Clayton Kershaw",
-      "h": "Gio Gonzalez"
-    },
-    "oddPerSet": {
-      "a": 1.50,
-      "h": 2.05
+      "a": ["Clayton Kershaw", "9-5", "2.73 ERA", "https://content.mlb.com/images/headshots/current/60x60/477132.png"],
+      "h": ["Gio Gonzalez", "10-11", "4.21 ERA", "https://content.mlb.com/images/headshots/current/60x60/461829.png"]
     },
     "gamedate": 20181013
   },
   "G2": {
     "game": {
-      "a": "Huston Astros",
-      "h": "Boston Red Sox"
-    },
-    "id": {
-      "a": "HOU",
-      "h": "BOS"
+      "a": ["Huston Astros", "HOU", "1.85"],
+      "h": ["Boston Red Sox", "BOS", "1.65"]
     },
     "competitors": {
-      "a": "Justin Verlander",
-      "h": "Chris Sale"
-    },
-    "oddPerSet": {
-      "a": 1.85,
-      "h": 1.65
+      "a": ["Justin Verlander", "16-9", "2.52 ERA", "https://content.mlb.com/images/headshots/current/60x60/434378.png"],
+      "h": ["Chris Sale", "12-4", "2.11 ERA", "https://content.mlb.com/images/headshots/current/60x60/519242.png"]
     },
     "gamedate": 20181014
   }
