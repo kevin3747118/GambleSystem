@@ -3,7 +3,10 @@
 const mysql = require('mysql');
 
 const logger = require('./gb_logger').logger;
+
 const Login = require('./model/gb_login').Login;
+const Bet = require('./model/gb_bet').Bet;
+
 const util = require('./gbUtil');
 const express = require('express');
 const querystring = require('querystring');
@@ -21,9 +24,42 @@ gbRouter.use(function (req, res, next) {
   next();
 })
 
-// gbRouter.post("/login", (res, res, next) => {
+gbRouter.get("/statBets", (req, res, next) => {
+  Bet.statBet(null)
+    .then((res) => {
+      req.response = {
+        status: "ok",
+        data: res
+      };
+      next();
+    })
+    .catch((err) => {
+      req.response = {
+        status: "error",
+        errorText: err
+      };
+      next();
+    })
+});
 
-// });
+gbRouter.post("/sendBets", (req, res, next) => {
+  const newBet = new Bet(req.body);
+  newBet.saveToDb(null)
+    .then((aBet) => {
+      req.response = {
+        status: "ok"
+      };
+      next();
+    })
+    .catch((err) => {
+      req.response = {
+        status: "error",
+        errorText: err
+      };
+      next();
+    })
+});
+
 
 gbRouter.post("/createLogin", (req, res, next) => {
   const newLogin = new Login(req.body);

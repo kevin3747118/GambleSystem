@@ -15,7 +15,7 @@ modelUtil.getConn = function (conn = null, dbpool = gbConsts.DBPOOL) {
   })
 }
 
-modelUtil.execSimpleSQL = function (conn = null, queryStr = "", dml = 'DML', dbpool = gbConsts.SIMUDBPOOL) {
+modelUtil.execSimpleSQL = function (conn = null, queryStr = "", dml = 'DML', dbpool = gbConsts.DBPOOL) {
   return new Promise((resolve, reject) => {
     modelUtil.getConn(conn, dbpool)
       .then((db) => {
