@@ -54,6 +54,7 @@ function setupDBPool() {
 
 function startGBServer() {
   // const https = require('https');
+  const session = require('client-sessions');
   const gbUtil = require("./gbUtil");
   const Login = require('./model/gb_login').Login;
   const express = require('express'); // call express
@@ -71,15 +72,15 @@ function startGBServer() {
 
   gbApp.use(express.static('public'));
 
-  // gb.use(session({
-  //   cookieName: alzkConsts.HTTP_SESSION_COOKIENAME,
-  //   secret: alzkConsts.HTTP_SESSION_SECRET,
-  //   duration: alzkConsts.HTTP_SESSION_DURATION,
-  //   activeDuration: alzkConsts.HTTP_SESSION_ACTIVE_DURATION,
-  //   httpOnly: true,
-  //   secure: false,
-  //   ephemeral: true
-  // }));
+  gbApp.use(session({
+    cookieName: gbConsts.HTTP_SESSION_COOKIENAME,
+    secret: gbConsts.HTTP_SESSION_SECRET,
+    duration: gbConsts.HTTP_SESSION_DURATION,
+    activeDuration: gbConsts.HTTP_SESSION_ACTIVE_DURATION,
+    httpOnly: true,
+    secure: false,
+    ephemeral: true
+  }));
 
   // gb.use("/adm", function (req, res, next) {
   //   if (!req[alzkConsts.HTTP_SESSION_COOKIENAME].user)
@@ -121,6 +122,7 @@ function startGBServer() {
               req.response = {
                 status: "SUCCESS"
               }
+              req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
               res.json(req.response);
             }
           })
