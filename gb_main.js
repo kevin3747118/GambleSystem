@@ -106,7 +106,8 @@ function startGBServer() {
   });
 
   gbApp.get('/gb', function (req, res) {
-    res.redirect("/gb.html");
+    // res.redirect("/gb.html");
+    res.sendFile(__dirname + "/gb.html");
   });
 
   gbApp.get("/getGames", (req, res, next) => {
