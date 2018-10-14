@@ -106,7 +106,7 @@ function startGBServer() {
     res.redirect("/gb");
   });
 
-  app.use("/gb", function (req, res, next) {
+  gbApp.use("/gb", function (req, res, next) {
     if (!req[gbConsts.HTTP_SESSION_COOKIENAME].user)
       // res.redirect("/login.html");
       res.response({
