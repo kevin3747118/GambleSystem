@@ -10,8 +10,9 @@ class Bet {
   constructor(betInfo) {
     this.userid = ''; // userid: kevin3747118
     this.nickname = '';
-    this.gameid = '';
     this.combimation = '';
+    this.game1id = '';
+    this.game2id = '';
     this.bet1 = '';
     this.bet2 = '';
     this.money = '';
@@ -28,10 +29,10 @@ class Bet {
   saveToDb(conn = null) {
     let self = this;
     return new Promise((resolve, reject) => {
-      let sql = `insert into bets (userid, nickname, gameid, combination, bet1, bet2, 
+      let sql = `insert into bets (userid, nickname, combination, game1id, game2id, bet1, bet2, 
                   money, totaloddperset, status, createdate) values (:userid,
-                  :nickname, :gameid, :combination, :bet1, :bet2, :money, :totaloddperset,
-                  :status, :createdate)`;
+                  :nickname, :combination, :game1id, :game2id, :bet1, :bet2, :money, 
+                  :totaloddperset, :status, :createdate)`;
       util.getConn(conn)
         .then((db) => {
           db.query(sql, self, (err, result) => {

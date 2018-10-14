@@ -80,7 +80,7 @@ gbRouter.get("/statBets", (req, res, next) => {
     })
 });
 
-gbRouter.post("/sendBet", (req, res, next) => {
+gbRouter.post("/sendBets", (req, res, next) => {
   const newBet = new Bet(req.body);
   newBet.saveToDb(null)
     .then((aBet) => {

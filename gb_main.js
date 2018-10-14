@@ -191,7 +191,6 @@ function startGBServer() {
   const gbRouter = require("./gb_router");
   gbApp.use('/gbApi', gbRouter);
 
-
   const privateKey = fs.readFileSync(configDir + '/key.pem', 'utf8');
   const certificate = fs.readFileSync(configDir + '/cert.pem', 'utf8');
   const credentials = {
