@@ -140,12 +140,12 @@ function startGBServer() {
               next()
             } else {
               delete alogin.password;
+              req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
               res.json({
                 status: "SUCCESS",
                 redirectUrl: "/gb"
               })
-              req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
-              next()
+              // next()
               // res.json(req.response);
             }
           })
