@@ -77,10 +77,6 @@ function startGBServer() {
   }));
   gbApp.use(bodyParser.json());
 
-  // start router
-  const gbRouter = require("./gb_router");
-  gbApp.use('/gbApi', gbRouter);
-
   gbApp.use(express.static('public'));
 
   gbApp.use(session({
@@ -93,14 +89,17 @@ function startGBServer() {
     ephemeral: true
   }));
 
-  // gb.use("/adm", function (req, res, next) {
-  //   if (!req[alzkConsts.HTTP_SESSION_COOKIENAME].user)
-  //     res.redirect("/login.html");
-  //   else
-  //     next();
-  // });
-
-  // begin of gamble system
+  gbApp.use("/gbApi", function (req, res, next) {
+    if (!req[gbConsts.HTTP_SESSION_COOKIENAME].user) {
+      // res.redirect("/login.html");
+      res.json({
+        status: "ERROR",
+        errorText: "Please login to do further action"
+      })
+      // next();
+    } else
+      next();
+  });
 
   gbApp.get('/', function (req, res) {
     res.redirect("/gb");
@@ -110,17 +109,77 @@ function startGBServer() {
     res.redirect("/gb.html");
   });
 
-  gbApp.use("/gbApi", function (req, res, next) {
-    if (!req[gbConsts.HTTP_SESSION_COOKIENAME].user) {
-      // res.redirect("/login.html");
-      res.json({
-        status: "ERROR",
-        errorText: "Please login to do further action"
+  gbApp.post('/login', (req, res, next) => {
+    req.response = {
+      status: ""
+    };
+    Login.getLoginById(null, req.body._id, true)
+      .then((alogin) => {
+        if (alogin === null) {
+          res.json({
+            status: 'NOID'
+          });
+          next();
+        } else {
+          gbUtil.comparePassword(req.body.password, alogin.password, (err, match) => {
+            if (err) throw err;
+            else if (!match) {
+              res.json({
+                status: "FAIL"
+              });
+              next()
+            } else {
+              delete alogin.password;
+              res.json({
+                status: "SUCCESS",
+                redirectUrl: "/gb"
+              })
+              req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
+              next()
+              // res.json(req.response);
+            }
+          })
+        }
       })
-      next();
-    } else
-      next();
+      .catch((err) => {
+        // logger.error("Login error:" + err);
+        res.status(500).send('Check Login Error !');
+      })
+  })
+
+  gbApp.post("/createLogin", (req, res, next) => {
+    const newLogin = new Login(req.body);
+    Login.getLoginById(null, newLogin._id)
+      .then((aLogin) => {
+        if (aLogin === null) {
+          return newLogin.saveToDb(null, true);
+        } else {
+          res.json({
+            status: "exist"
+          });
+          throw "exist";
+          // next()
+        }
+      })
+      .then((aLogin) => {
+        req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
+        res.json({
+          status: "ok"
+        });
+        next();
+      })
+      .catch((err) => {
+        if (err != "exist")
+          res.json({
+            status: "error",
+            errorText: err
+          });
+        next();
+      })
   });
+
+  const gbRouter = require("./gb_router");
+  gbApp.use('/gbApi', gbRouter);
 
 
   const privateKey = fs.readFileSync(configDir + '/key.pem', 'utf8');
