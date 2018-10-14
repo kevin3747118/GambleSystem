@@ -24,6 +24,43 @@ gbRouter.use(function (req, res, next) {
   next();
 })
 
+gbRouter.post("/deleteBet", (req, res, next) => {
+  const deleteId = req.body;
+  newBet.deleteBet(null, deleteId)
+    .then(() => {
+      req.response = {
+        status: "ok"
+      };
+      next();
+    })
+    .catch((err) => {
+      req.response = {
+        status: "error",
+        errorText: err
+      };
+      next();
+    })
+});
+
+gbRouter.post("/getPersonalBet", (req, res, next) => {
+  Bet.getPersonalBet(null, req.body)
+    .then((res) => {
+      req.response = {
+        status: "ok",
+        data: res
+      };
+      next();
+    })
+    .catch((err) => {
+      req.response = {
+        status: "error",
+        errorText: err
+      };
+      next();
+    })
+});
+
+
 gbRouter.get("/statBets", (req, res, next) => {
   Bet.statBet(null)
     .then((res) => {
@@ -42,7 +79,7 @@ gbRouter.get("/statBets", (req, res, next) => {
     })
 });
 
-gbRouter.post("/sendBets", (req, res, next) => {
+gbRouter.post("/sendBet", (req, res, next) => {
   const newBet = new Bet(req.body);
   newBet.saveToDb(null)
     .then((aBet) => {
@@ -91,7 +128,7 @@ gbRouter.post("/createLogin", (req, res, next) => {
 });
 
 gbRouter.get("/getGames", (req, res, next) => {
-  const gameRead = fs.readFileSync('./game.json', 'utf8')
+  const gameRead = fs.readFileSync(configDir + '/game.json', 'utf8')
   const gameReturn = JSON.stringify(JSON.parse(gameRead));
   req.response = {
     status: "ok",
@@ -100,36 +137,6 @@ gbRouter.get("/getGames", (req, res, next) => {
   next()
 })
 
-// simuRouter.get("/startTest", function (req, res, next) {
-//   const runParams = {};
-//   runParams.scanDelay = parseInt(req.query.scanDelay);
-//   runParams.kickOffInterval = parseInt(req.query.kickOffInterval);
-//   ['R', 'G', 'P', 'U'].forEach((t) => {
-//     var qt = t;
-//     if (t == 'R')
-//       qt = 'G';
-//     runParams["e0Interval" + t] = parseInt(req.query["e0Interval" + qt]);
-//     runParams["scanInterval" + t] = parseInt(req.query["scanInterval" + qt]);
-//     runParams["k0Percent" + t] = parseInt(req.query["k0Percent" + qt]);
-//     runParams["k1Percent" + t] = parseInt(req.query["k1Percent" + qt]);
-//     runParams["k2Percent" + t] = parseInt(req.query["k2Percent" + qt]);
-//   });
-//   mUtil.execSimpleSQL(null, `delete from testreports where testcasename='${TESTCASE.testCaseName}'`)
-//     .then(() => {
-//       TESTCASE.start(runParams);
-//       logger.info("Test startup ok !");
-//       next();
-//     }).catch((err) => {
-//       req.response.status = "error";
-//       req.response.errorText = err;
-//       next();
-//     })
-// })
-
-// simuRouter.get("/stopTest", function (req, res, next) {
-//   TESTCASE.stop();
-//   next();
-// })
 
 // simuRouter.get("/relinkVLocks", function (req, res, next) {
 //   const lockSettings = {
@@ -162,43 +169,6 @@ gbRouter.get("/getGames", (req, res, next) => {
 //       });
 //       return Promise.all(p);
 //     }).then(() => {
-//       next();
-//     }).catch((err) => {
-//       req.response.status = "error";
-//       req.response.errorText = err;
-//       next();
-//     })
-// });
-
-// simuRouter.get("/getTestReport", function (req, res, next) {
-//   req.response.totalVLocks = TESTCASE.vLocks.length;
-//   req.response.runParams = TESTCASE.runParams;
-//   req.response.totalInterruptSessions = 0;
-//   req.response.totalCompleteSessions = 0;
-//   req.response.totalTime = 0;
-//   mUtil.execSimpleSQL(null, `select sessiontime from testreports 
-//         where testcasename='${TESTCASE.testCaseName}'`, "SEL")
-//     .then((sessionInfos) => {
-//       sessionInfos.forEach((s) => {
-//         if (s.completed == 'N')
-//           req.response.totalInterruptSessions++;
-//         else
-//           req.response.totalCompleteSessions++;
-//         req.response.totalTime += s.sessiontime;
-//       });
-//       next();
-//     }).catch((err) => {
-//       req.response.status = "error";
-//       req.response.errorText = err;
-//       next();
-//     })
-// });
-
-// simuRouter.get("/getAvailableVLocks", function (req, res, next) {
-//   mUtil.execSimpleSQL(null, `select count(*) cnt from vlocks 
-//         where testcasename=''`, "SEL")
-//     .then((cnts) => {
-//       req.response.vLockCount = cnts[0].cnt;
 //       next();
 //     }).catch((err) => {
 //       req.response.status = "error";

@@ -10,6 +10,7 @@ class Bet {
   constructor(betInfo) {
     this.userid = ''; // userid: kevin3747118
     this.nickname = '';
+    this.gameid = '';
     this.combimation = '';
     this.bet1 = '';
     this.bet2 = '';
@@ -27,9 +28,9 @@ class Bet {
   saveToDb(conn = null) {
     let self = this;
     return new Promise((resolve, reject) => {
-      let sql = `insert into bets (userid, nickname, combination, bet1, bet2, 
+      let sql = `insert into bets (userid, nickname, gameid, combination, bet1, bet2, 
                   money, totaloddperset, status, createdate) values (:userid,
-                  :nickname, :combination, :bet1, :bet2, :money, :totaloddperset,
+                  :nickname, :gameid, :combination, :bet1, :bet2, :money, :totaloddperset,
                   :status, :createdate)`;
       util.getConn(conn)
         .then((db) => {
@@ -37,7 +38,7 @@ class Bet {
             if (!conn) db.release();
             if (err) throw err;
             if (result.affectedRows != 1)
-              reject("Login insert error !");
+              reject("Save a bet error !");
             else
               resolve(self);
           })
@@ -48,16 +49,56 @@ class Bet {
     })
   }
 
+  static deleteBet(conn = null, deleteId) {
+    return new Promise((resolve, reject) => {
+      let sql = `delete from bets where _id = :_id`;
+      util.getConn(conn)
+        .then((db) => {
+          db.query(sql, deleteId, (err, result) => {
+            if (!conn) db.release();
+            if (err) throw err;
+            if (result.affectedRows != 1)
+              reject("Delete a bet error !");
+            else
+              resolve();
+          })
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  }
+
   static statBet(conn = null) {
     return new Promise((resolve, reject) => {
       let sql = ` select userid, nickname, sum(convert(money*totaloddperset, signed)) as money
-                  from gamble.bets where status = 3 group by nickname, userid`;
+                  from bets where status = 3 group by nickname, userid`;
       util.execSimpleSQL(conn, sql, "SEL")
         .then((res) => {
           resolve(res)
         })
         .catch((err) => {
           reject(err);
+        })
+    })
+  }
+
+  static getPersonalBet(conn = null, id) {
+    return new Promise((resolve, reject) => {
+      let sql = `select * from bets where userid = :userid`;
+      util.getConn(conn)
+        .then((db) => {
+          db.query(sql, id, (err, result) => {
+            if (!conn) db.release();
+            if (err) throw err;
+            // if (result.affectedRows != 1)
+            //   reject("Get personal bet error !");
+            else
+              resolve(result);
+          })
+        })
+        .catch((err) => {
+          reject(err)
         })
     })
   }
