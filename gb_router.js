@@ -11,6 +11,7 @@ const util = require('./gbUtil');
 const express = require('express');
 const querystring = require('querystring');
 const mUtil = require('./model/util');
+const gbUtil = require('./gbutil');
 
 const fs = require("fs");
 
@@ -108,6 +109,74 @@ gbRouter.get("/getGames", (req, res, next) => {
   next()
 })
 
+gbRouter.post('/login', (req, res, next) => {
+  req.response = {
+    status: ""
+  };
+  Login.getLoginById(null, req.body._id, true)
+    .then((alogin) => {
+      if (alogin === null) {
+        req.response = {
+          status: 'NOID'
+        };
+        next();
+      } else {
+        gbUtil.comparePassword(req.body.password, alogin.password, (err, match) => {
+          if (err) throw err;
+          else if (!match) {
+            req.response = {
+              status: "FAIL"
+            };
+            next()
+          } else {
+            delete alogin.password;
+            req.response = {
+              status: "SUCCESS",
+              redirectUrl: "/gb"
+            }
+            req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
+            next()
+            // res.json(req.response);
+          }
+        })
+      }
+    })
+    .catch((err) => {
+      // logger.error("Login error:" + err);
+      res.status(500).send('Check Login Error !');
+    })
+})
+
+gbRouter.post("/createLogin", (req, res, next) => {
+  const newLogin = new Login(req.body);
+  Login.getLoginById(null, newLogin._id)
+    .then((aLogin) => {
+      if (aLogin === null) {
+        return newLogin.saveToDb(null, true);
+      } else {
+        req.response = {
+          status: "exist"
+        };
+        throw "exist";
+        // next()
+      }
+    })
+    .then((aLogin) => {
+      req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
+      req.response = {
+        status: "ok"
+      };
+      next();
+    })
+    .catch((err) => {
+      if (err != "exist")
+        req.response = {
+          status: "error",
+          errorText: err
+        };
+      next();
+    })
+});
 
 // simuRouter.get("/relinkVLocks", function (req, res, next) {
 //   const lockSettings = {
