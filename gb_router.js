@@ -81,13 +81,17 @@ gbRouter.get("/statBets", (req, res, next) => {
 });
 
 gbRouter.post("/sendBets", (req, res, next) => {
-  const newBet = new Bet(req.body);
-  newBet.saveToDb(null)
-    .then((aBet) => {
+  const betArr = []
+  req.body.forEach((bet) => {
+    const newBet = new Bet(bet);
+    betArr.push(newBet.saveToDb(null))
+  });
+  Promise.all(betArr)
+    .then(() => {
       req.response = {
         status: "ok"
       };
-      next();
+      next()
     })
     .catch((err) => {
       req.response = {
@@ -96,6 +100,19 @@ gbRouter.post("/sendBets", (req, res, next) => {
       };
       next();
     })
+  // .then((aBet) => {
+  //   req.response = {
+  //     status: "ok"
+  //   };
+  //   next();
+  // })
+  // .catch((err) => {
+  //   req.response = {
+  //     status: "error",
+  //     errorText: err
+  //   };
+  //   next();
+  // })
 });
 
 
