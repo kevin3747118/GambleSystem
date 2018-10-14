@@ -99,16 +99,6 @@ gbRouter.post("/sendBet", (req, res, next) => {
 });
 
 
-gbRouter.get("/getGames", (req, res, next) => {
-  const gameRead = fs.readFileSync(configDir + '/game.json', 'utf8')
-  const gameReturn = JSON.stringify(JSON.parse(gameRead));
-  req.response = {
-    status: "ok",
-    data: gameReturn
-  };
-  next()
-})
-
 gbRouter.use(function (req, res) {
   res.json(req.response);
 });

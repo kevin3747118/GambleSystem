@@ -109,6 +109,16 @@ function startGBServer() {
     res.redirect("/gb.html");
   });
 
+  gbApp.get("/getGames", (req, res, next) => {
+    const gameRead = fs.readFileSync(configDir + '/game.json', 'utf8')
+    const gameReturn = JSON.stringify(JSON.parse(gameRead));
+    res.json({
+      status: "ok",
+      data: gameReturn
+    });
+    next()
+  })
+
   gbApp.post('/login', (req, res, next) => {
     req.response = {
       status: ""
