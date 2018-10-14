@@ -53,7 +53,8 @@ function setupDBPool() {
 
 
 function startGBServer() {
-  // const https = require('https');
+  const fs = require('fs');
+  const https = require('https');
   const session = require('client-sessions');
   const gbUtil = require("./gbUtil");
   const Login = require('./model/gb_login').Login;
@@ -144,7 +145,20 @@ function startGBServer() {
       })
   })
 
-  gbApp.listen(gbConsts.PORT_GB);
+
+  const privateKey = fs.readFileSync(configDir + '/key.pem', 'utf8');
+  const certificate = fs.readFileSync(configDir + '/cert.pem', 'utf8');
+  const credentials = {
+    key: privateKey,
+    cert: certificate,
+    passphrase: gbConsts.HTTPS_PASSPHRASE,
+    requestCert: false,
+    rejectUnauthorized: false
+  };
+  const httpsServer = https.createServer(credentials, gbApp).listen(gbConsts.PORT_GB, () => {
+    logger.debug('Gamble System server listening on port : ' + gbConsts.PORT_GB);
+  });
+  // gbApp.listen(gbConsts.PORT_GB);
 }
 
 function main() {
@@ -154,4 +168,4 @@ function main() {
 
 main()
 
-logger.debug('ALZK Gamble System URL : http://127.0.0.1:' + gbConsts.PORT_GB);
+// logger.debug('ALZK Gamble System URL : http://127.0.0.1:' + gbConsts.PORT_GB);

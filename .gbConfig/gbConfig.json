@@ -16,5 +16,7 @@
   "HTTP_SESSION_DURATION": 31536000000,
   "HTTP_SESSION_ACTIVE_DURATION": 1800000,
 
+  "HTTPS_PASSPHRASE": "0123456789",
+
   "SPORTS_CATEGORY": "https://www.sportslottery.com.tw/web/services/rs/betting/tournamentGames/15102/0/t-4091.json?groups=384&locale=tw&brandId=defaultBrand&channelId=1"
 }
