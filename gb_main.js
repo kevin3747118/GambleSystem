@@ -106,14 +106,19 @@ function startGBServer() {
     res.redirect("/gb");
   });
 
-  gbApp.use("/gb", function (req, res, next) {
-    if (!req[gbConsts.HTTP_SESSION_COOKIENAME].user)
+  gbApp.get('/gb', function (req, res) {
+    res.redirect("/gb.html");
+  });
+
+  gbApp.use("/gbApi", function (req, res, next) {
+    if (!req[gbConsts.HTTP_SESSION_COOKIENAME].user) {
       // res.redirect("/login.html");
-      res.response({
+      res.json({
         status: "ERROR",
         errorText: "Please login to do further action"
       })
-    else
+      next();
+    } else
       next();
   });
 
