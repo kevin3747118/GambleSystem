@@ -102,12 +102,20 @@ function startGBServer() {
 
   // begin of gamble system
 
-  gbApp.get('/', (req, res) => {
-    res.sendFile(__dirname + "/gb.html", 'utf8', function (err) {
-      if (err)
-        logger.error("Gamble System page load error:" + err);
-    });
-  })
+  gbApp.get('/', function (req, res) {
+    res.redirect("/gb");
+  });
+
+  app.use("/gb", function (req, res, next) {
+    if (!req[gbConsts.HTTP_SESSION_COOKIENAME].user)
+      // res.redirect("/login.html");
+      res.response({
+        status: "ERROR",
+        errorText: "Please login to do further action"
+      })
+    else
+      next();
+  });
 
   gbApp.post('/login', (req, res) => {
     req.response = {
@@ -131,7 +139,8 @@ function startGBServer() {
             } else {
               delete alogin.password;
               req.response = {
-                status: "SUCCESS"
+                status: "SUCCESS",
+                redirectUrl: "/gb"
               }
               req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
               res.json(req.response);
@@ -144,6 +153,36 @@ function startGBServer() {
         res.status(500).send('Check Login Error !');
       })
   })
+
+  gbApp.post("/createLogin", (req, res, next) => {
+    const newLogin = new Login(req.body);
+    Login.getLoginById(null, newLogin._id)
+      .then((aLogin) => {
+        if (aLogin === null) {
+          return newLogin.saveToDb(null, true);
+        } else {
+          req.response = {
+            status: "exist"
+          };
+          throw "exist";
+        }
+      })
+      .then((aLogin) => {
+        req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
+        req.response = {
+          status: "ok"
+        };
+        next();
+      })
+      .catch((err) => {
+        if (err != "exist")
+          req.response = {
+            status: "error",
+            errorText: err
+          };
+        next();
+      })
+  });
 
 
   const privateKey = fs.readFileSync(configDir + '/key.pem', 'utf8');

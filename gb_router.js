@@ -98,35 +98,6 @@ gbRouter.post("/sendBet", (req, res, next) => {
 });
 
 
-gbRouter.post("/createLogin", (req, res, next) => {
-  const newLogin = new Login(req.body);
-  Login.getLoginById(null, newLogin._id)
-    .then((aLogin) => {
-      if (aLogin === null) {
-        return newLogin.saveToDb(null, true);
-      } else {
-        req.response = {
-          status: "exist"
-        };
-        throw "exist";
-      }
-    })
-    .then((aLogin) => {
-      req.response = {
-        status: "ok"
-      };
-      next();
-    })
-    .catch((err) => {
-      if (err != "exist")
-        req.response = {
-          status: "error",
-          errorText: err
-        };
-      next();
-    })
-});
-
 gbRouter.get("/getGames", (req, res, next) => {
   const gameRead = fs.readFileSync(configDir + '/game.json', 'utf8')
   const gameReturn = JSON.stringify(JSON.parse(gameRead));
