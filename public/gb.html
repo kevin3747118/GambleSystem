@@ -222,7 +222,7 @@
             "_id": $('#login-form').find('input[name="_id"]').val(),
             "password": $("#login-form").find('input[name="password"]').val()
           };
-          $.post('https://122.116.92.241:8787/Login', data, function (data, status) {
+          $.post('https://127.0.0.1:8787/Login', data, function (data, status) {
             if (status === 'success') {
               if (data.status === 'SUCCESS') {
                 localStorage.setItem('user', JSON.stringify(data.data));
@@ -243,7 +243,7 @@
             password: $('#register-form').find('input[name="password"]').val(),
             nickname: $('#register-form').find('input[name="nickname"]').val()
           };
-          $.post('https://122.116.92.241:8787/createLogin', data, function (data, status) {
+          $.post('https://127.0.0.1:8787/createLogin', data, function (data, status) {
             if (status === 'success') {
               if (data.status === 'ok') {
                 window.alert('Success!');
@@ -288,7 +288,7 @@
               data['totaloddperset'] = $(game).find('input[name="totaloddperset"]').val();
               list.push(data);
             });
-          } else {
+          } else { //adde
             let data = {
               "userid": user['_id'],
               "nickname": user['nickname'],
@@ -310,7 +310,7 @@
             data['totaloddperset'] = $('#index-aside li.group input[name="totaloddperset"]').val();
             list.push(data);
           }
-          $.post('https://122.116.92.241:8787/gbApi/sendBets', { data: list }, function (data, status) {
+          $.post('https://127.0.0.1:8787/gbApi/sendBets', { data: list }, function (data, status) {
             if (status === 'success') {
               if (data.status === 'ok') {
                 window.alert('Success!');

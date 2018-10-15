@@ -69,7 +69,7 @@ function gsPost(param, callback) {
 function loadGame() {
     $('#index-gamelist').showLoader();
     let param = {};
-    param['url'] = 'https://122.116.92.241:8787/getGames';
+    param['url'] = 'https://127.0.0.1:8787/getGames';
     gsGet(param, function (data) {
         if (data != null) {
             let html =

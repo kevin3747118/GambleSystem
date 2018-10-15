@@ -92,10 +92,13 @@
             <li class="list-group-item bg-warning text-center">投注單</li>
             <li class="list-group-item bg-light text-center text-primary">選擇玩法</li>
             <li class="list-group-item">
-              <label><input type="radio" name="combination" value="1" checked> 單場投注</label>
+              <label><input type="radio" name="combination" value="1" checked>  單場投注</label>
             </li>
             <li class="list-group-item">
-              <label><input type="radio" name="combination" value="2"> 過關</label>
+              <label><input type="radio" name="combination" value="2">  過關</label>
+            </li>
+            <li class="list-group-item">
+              <label><input type="radio" name="combination" value="3">  美聯冠軍、國聯冠軍及世界大賽冠軍</label>
             </li>
             <li class="list-group-item bg-light text-center text-primary">已選擇賽事</li>
             <li class="list-group-item text-center">請選擇賽事</li>
@@ -233,14 +236,13 @@
     <!-- <script src="../../assets/js/vendor/holder.min.js"></script> -->
 
     <script>
-
       function fnLogin() {
         if ($('#login-form').validate()) {
           var data = {
             "_id": $('#login-form').find('input[name="_id"]').val(),
             "password": $("#login-form").find('input[name="password"]').val()
           };
-          $.post('https://122.116.92.241:8787/Login', data, function (data, status) {
+          $.post('https://127.0.0.1:8787/Login', data, function (data, status) {
             if (status === 'success') {
               if (data.status === 'SUCCESS') {
                 localStorage.setItem('user', JSON.stringify(data.data));
@@ -261,7 +263,7 @@
             password: $('#register-form').find('input[name="password"]').val(),
             nickname: $('#register-form').find('input[name="nickname"]').val()
           };
-          $.post('https://122.116.92.241:8787/createLogin', data, function (data, status) {
+          $.post('https://127.0.0.1:8787/createLogin', data, function (data, status) {
             if (status === 'success') {
               if (data.status === 'ok') {
                 localStorage.setItem('user', JSON.stringify(data.data));
@@ -338,7 +340,9 @@
           if (error) {
             window.alert('請輸入投注金額，不可為0!');
           } else {
-            $.post('https://122.116.92.241:8787/gbApi/sendBets', { data: list }, function (data, status) {
+            $.post('https://127.0.0.1:8787/gbApi/sendBets', {
+              data: list
+            }, function (data, status) {
               if (status === 'success') {
                 if (data.status === 'ok') {
                   window.alert('投注成功!');
@@ -363,12 +367,15 @@
       // 結果
       function loadHistory() {
         $('#index-history tbody tr:not(:first)').empty();
-        $.post('https://122.116.92.241:8787/gbApi/GetPersonalBet', { 'userid': 'tiger' },
+        $.post('https://127.0.0.1:8787/gbApi/GetPersonalBet', {
+            'userid': 'tiger'
+          },
           function (data, status) {
             if (status === "success") {
               if (data.status === 'ok') {
                 $.each(data.data, function (idx, rec) {
-                  var html = `<tr><td class="border">{0}</td><td class="border">{1}</td>
+                  var html =
+                    `<tr><td class="border">{0}</td><td class="border">{1}</td>
                     <td class="border">{2}</td><td class="border">{3}</td><td class="border">{4}</td>
                     <td class="border">{5}</td><td class="border">{6}</td></tr>`;
                   var row = String.format(html, rec['createdate'],
@@ -402,7 +409,8 @@
       // };
 
       $(document).ready(function () {
-        loadGame();
+        // loadGame();
+        loadWCGame();
         loadHistory();
         let user = GetUser();
         if (user != null) {
@@ -411,7 +419,6 @@
           $('#login-modal').modal('show');
         }
       });
-
     </script>
 </body>
 

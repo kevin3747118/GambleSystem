@@ -1,0 +1,25 @@
+  {
+    "G98": {
+      "game": {
+        "a": ["Huston Astros", "HOU", "3.5X"],
+        "h": ["Boston Red Sox", "BOS", "4.5X"],
+        "area": "America League"
+      }
+    },
+    "G99": {
+      "game": {
+        "a": ["Losanger Dodgers", "LAD", "1.40"],
+        "h": ["Milwaukee Brewers", "MIL", "2.30"],
+        "area": "National League"
+      }
+    },
+    "G100": {
+      "game": {
+        "a1": ["Huston Astros", "HOU", "2.20"],
+        "h1": ["Boston Red Sox", "BOS", "3.25"],
+        "a2": ["Losanger Dodgers", "LAD", "3.10"],
+        "h2": ["Milwaukee Brewers", "MIL", "4.50"],
+        "area": "World Championship"
+      }
+    }
+  }

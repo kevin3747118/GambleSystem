@@ -102,7 +102,7 @@ function startGBServer() {
   });
 
   gbApp.get('/', function (req, res) {
-    res.sendFile(__dirname + "\\gb.html", 'utf8', function (err) {
+    res.sendFile(__dirname + "/gb.html", 'utf8', function (err) { // change path
       if (err)
         logger.error("dg page load error:" + err);
     });
@@ -122,6 +122,16 @@ function startGBServer() {
     res.json({
       status: "ok",
       data: gameReturn
+    });
+    next()
+  })
+
+  gbApp.get("/getWCGames", (req, res, next) => {
+    const wcgameRead = fs.readFileSync(configDir + '/wc.json', 'utf8')
+    const wcgameReturn = JSON.stringify(JSON.parse(wcgameRead));
+    res.json({
+      status: "ok",
+      data: wcgameReturn
     });
     next()
   })
@@ -160,7 +170,7 @@ function startGBServer() {
       })
       .catch((err) => {
         // logger.error("Login error:" + err);
-        res.status(500).send('Check Login Error !');
+        res.status(500).send('Check Login Error ! ' + err);
       })
   })
 
