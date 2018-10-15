@@ -27,10 +27,9 @@
         <div class="nav d-flex justify-content-around align-items-stretch">
           <!-- <span class="px-2 text-dark">分區對戰圖</span> -->
           <a href="#"><img class="mlb-logo" src="gb/img/mlb_logo.png" /></a>
-          <!-- <span class="px-2 text-dark"></span> -->
-          <div><span id="index-user"></span>&nbsp;&nbsp;<a class="px-2 text-dark" href="#" data-toggle="modal"
-              data-target="#history-modal">投注紀錄</a>&nbsp;&nbsp;
-            <a class="px-2 text-dark" href="#" onclick="fnLogout()">登出</a></div>
+          <span id="index-user" class="px-2 text-dark"></span>
+          <a class="px-2 text-dark" href="#" onclick="fnLogout()">登出</a>
+          <!-- <a class="px-2 text-dark" href="#" data-toggle="modal" data-target="#login-modal">Login</a> -->
         </div>
       </div>
 
@@ -55,7 +54,7 @@
     </div> -->
 
     <div class="row mb-2">
-      <img src="https://securea.mlb.com/assets/images/0/6/4/297796064/cuts/768x432/cut.jpg" class="rounded mx-auto d-block"
+      <img src="https://securea.mlb.com/assets/images/0/6/4/297796064/cuts/768x432/cut.jpg" class="rounded mx-auto d-block" 
         alt="Bracket">
     </div>
 
@@ -182,34 +181,17 @@
     </div>
 
     <!--History Model-->
-    <div id="history-modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    <div id="history-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
       aria-hidden="true" data-backdrop="static" data-keyboard="false">
-      <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
           <div class="modal-body">
-            <Table id="index-history">
-              <col width="130">
-              <col width="80">
-              <col width="80">
-              <col width="80">
-              <col width="80">
-              <col width="80">
-              <col width="80">
-              <tbody>
-                <tr>
-                  <th class="border">日期</th>
-                  <th class="border">玩法</th>
-                  <th class="border">隊伍1</th>
-                  <th class="border">隊伍2</th>
-                  <th class="border">賠率</th>
-                  <th class="border">金額</th>
-                  <th class="border">結果</th>
-                </tr>
-              </tbody>
-            </Table>
+            <ul>
+              <li></li>
+            </ul>
           </div>
           <!-- <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -229,7 +211,7 @@
     <script src="gb/js/popper.min.js"></script>
     <script src="gb/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
-    <script src="gb/js/gb.js?20"></script>
+    <script src="gb/js/gb.js"></script>
     <!-- <script src="../../assets/js/vendor/holder.min.js"></script> -->
 
     <script>
@@ -264,8 +246,7 @@
           $.post('https://122.116.92.241:8787/createLogin', data, function (data, status) {
             if (status === 'success') {
               if (data.status === 'ok') {
-                localStorage.setItem('user', JSON.stringify(data.data));
-                window.location = '/';
+                window.alert('Success!');
               } else {
                 window.alert(data.status);
               }
@@ -282,7 +263,6 @@
 
       function fnBet() {
         let user = GetUser();
-        let error = false;
         if (user != null) {
           let games = $('#index-aside li.game');
           let combination = $('#index-aside input[name="combination"]:checked').val();
@@ -306,8 +286,6 @@
               data['bet1'] = $(game).find('input[name="bet"]').val();
               data['money'] = $(game).find('input[name="money"]').val();
               data['totaloddperset'] = $(game).find('input[name="totaloddperset"]').val();
-              if (data['money'] === 0)
-                error = true;
               list.push(data);
             });
           } else {
@@ -328,59 +306,22 @@
               data['game' + (idx + 1).toString() + 'id'] = $(game).find('input[name="gameid"]').val();
               data['bet' + (idx + 1).toString()] = $(game).find('input[name="bet"]').val();
             });
-            let group = $('#index-aside li.group');
-            data['money'] = $(group).find('input[name="money"]').val();
-            data['totaloddperset'] = $(group).find('input[name="totaloddperset"]').val();
-            if (data['money'] === 0)
-              error = true;
+            data['money'] = $('#index-aside li.group input[name="money"]').val();
+            data['totaloddperset'] = $('#index-aside li.group input[name="totaloddperset"]').val();
             list.push(data);
           }
-          if (error) {
-            window.alert('請輸入投注金額，不可為0!');
-          } else {
-            $.post('https://122.116.92.241:8787/gbApi/sendBets', { data: list }, function (data, status) {
-              if (status === 'success') {
-                if (data.status === 'ok') {
-                  window.alert('投注成功!');
-                  loadHistory();
-                  $('#history-modal').modal('show');
-                } else {
-                  window.alert('請先登入進行投注!');
-                }
-              }
-            });
-          }
-        }
-        return (false);
-      };
-
-      // 日期
-      // 玩法
-      // 隊伍1
-      // 隊伍2
-      // 賠率
-      // 金額
-      // 結果
-      function loadHistory() {
-        $('#index-history tbody tr:not(:first)').empty();
-        $.post('https://122.116.92.241:8787/gbApi/GetPersonalBet', { 'userid': 'tiger' },
-          function (data, status) {
-            if (status === "success") {
+          $.post('https://122.116.92.241:8787/gbApi/sendBets', { data: list }, function (data, status) {
+            if (status === 'success') {
               if (data.status === 'ok') {
-                $.each(data.data, function (idx, rec) {
-                  var html = `<tr><td class="border">{0}</td><td class="border">{1}</td>
-                    <td class="border">{2}</td><td class="border">{3}</td><td class="border">{4}</td>
-                    <td class="border">{5}</td><td class="border">{6}</td></tr>`;
-                  var row = String.format(html, rec['createdate'],
-                    (rec['combination'] === '1') ? '單場投注' : '過關', rec['bet1'], rec['bet2'],
-                    rec['totaloddperset'], rec['money'], rec['status']);
-                  $('#index-history tbody').append(row);
-                });
+                window.alert('Success!');
+              } else {
+                window.alert('請先登入ㄛ!');
               }
             }
-          }
-        );
-      }
+          });
+          return (false);
+        }
+      };
 
       // function gsGet(param, callback) {
       //   $.get(param['url'], { data: param['data'] },
@@ -403,10 +344,9 @@
 
       $(document).ready(function () {
         loadGame();
-        loadHistory();
         let user = GetUser();
         if (user != null) {
-          $('#index-user').append("HI! " + user['nickname']);
+          $('#index-user').append("HI!賭徒 " + user['nickname']);
         } else {
           $('#login-modal').modal('show');
         }

@@ -64,10 +64,10 @@ function startGBServer() {
 
   gbApp.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-    res.header("X-Powered-By", ' 3.2.1')
-    res.header("Content-Type", "application/json;charset=utf-8");
+    // res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    // res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+    // res.header("X-Powered-By", ' 3.2.1')
+    // res.header("Content-Type", "application/json;charset=utf-8");
     next();
   });
 
@@ -102,13 +102,19 @@ function startGBServer() {
   });
 
   gbApp.get('/', function (req, res) {
-    res.redirect("/gb");
+    res.sendFile(__dirname + "\\gb.html", 'utf8', function (err) {
+      if (err)
+        logger.error("dg page load error:" + err);
+    });
   });
 
-  gbApp.get('/gb', function (req, res) {
-    // res.redirect("/gb.html");
-    res.sendFile(__dirname + "/gb.html");
-  });
+  // gbApp.get('/gb', function (req, res) {
+  //   // res.redirect("/gb.html");
+  //   res.sendFile(__dirname + "/gb.html", 'utf8', function (err) {
+  //     if (err)
+  //       logger.error("dg page load error:" + err);
+  //   });
+  // });
 
   gbApp.get("/getGames", (req, res, next) => {
     const gameRead = fs.readFileSync(configDir + '/game.json', 'utf8')
@@ -144,7 +150,7 @@ function startGBServer() {
               req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
               res.json({
                 status: "SUCCESS",
-                redirectUrl: "/gb"
+                data: alogin
               })
               // next()
               // res.json(req.response);
@@ -168,14 +174,15 @@ function startGBServer() {
           res.json({
             status: "exist"
           });
-          throw "exist";
+          throw "帳號已存在!";
           // next()
         }
       })
       .then((aLogin) => {
-        req[gbConsts.HTTP_SESSION_COOKIENAME].user = alogin;
+        req[gbConsts.HTTP_SESSION_COOKIENAME].user = aLogin;
         res.json({
-          status: "ok"
+          status: "ok",
+          data: aLogin
         });
         next();
       })

@@ -82,7 +82,7 @@ gbRouter.get("/statBets", (req, res, next) => {
 
 gbRouter.post("/sendBets", (req, res, next) => {
   const betArr = []
-  req.body.forEach((bet) => {
+  req.body.data.forEach((bet) => {
     const newBet = new Bet(bet);
     betArr.push(newBet.saveToDb(null))
   });
