@@ -7,14 +7,10 @@ process.on('uncaughtException', (err) => {
 gbConsts = {}; // global variable
 configDir = './.gbConfig';
 logDir = './log';
-// otaDir = './ota_download';
 
 const logger = require('./gb_logger').logger;
-// const winston = require('winston');
-const mysql = require('mysql');
-// const util = require('./gbUtil');
-// const TestCase = require('./model/alzk_testCase').TestCase;
 
+const mysql = require('mysql');
 
 gbConsts = require(configDir + '/gbConfig.json');
 
