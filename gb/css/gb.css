@@ -9,11 +9,6 @@ body {
   font-weight:300;
 }
 
-#index-history td, 
-#index-history th {
-  border: 1px solid black;
-}
-
 .jumbotron {
     background: url('https://securea.mlb.com/assets/images/8/2/4/297531824/cuts/768x432/cut.jpg') no-repeat !important;
 }

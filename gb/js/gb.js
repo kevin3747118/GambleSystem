@@ -28,12 +28,17 @@ function GetUser() {
     return user;
 };
 
+function gsTask(callback, seconds) {
+    callback();
+    return setInterval(callback, seconds * 1000);
+};
+
 function gsGet(param, callback) {
     $.get(param['url'], { data: param['data'] },
         function (data, status) {
             if (status === "success") {
                 if (data.status === 'ok') {
-                    let json = JSON.parse(data.data);
+                    let json = (!Array.isArray(data.data)) ? JSON.parse(data.data) : data.data;
                     if (typeof callback === 'function') {
                         callback(json);
                     } else {
@@ -69,53 +74,85 @@ function gsPost(param, callback) {
 function loadGame() {
     $('#index-gamelist').showLoader();
     let param = {};
-    param['url'] = 'https://127.0.0.1:8787/getGames';
-    gsGet(param, function (data) {
-        if (data != null) {
-            let html =
+    param['url'] = '/getGames';
+    gsGet(param, function (games) {
+        if (Array.isArray(games)) {
+            //             let html =
+            //                 `<div class="row mb-3">
+            //     <div class="col-md-12">
+            //       <div class="card shadow-sm" data-gameid="{gameid}">
+            //         <div class="card-footer">
+            //           <strong class="text-primary">{gamedate}{gamename}</strong>
+            //         </div>
+            //         <div class="card-body border-top border-bottom h-md-100" data-gameid="{gameid}" data-optid="">
+            //           <div class="gb-card-team">{optname}</div>
+            //           <div>{a-pitcher} ({a-state}, {a-era})</div>
+            //           <h5 style="text-align: right">{a-odd}</h5>
+            //         </div>
+            //         <div class="card-body h-md-100" data-gameid="{gameid}" data-optid="">
+            //         <div class="gb-card-team">{optname}</div>
+            //         <div>{h-pitcher} ({h-state}, {h-era})</div>
+            //         <h5 style="text-align: right">{h-odd}</h5>
+            //         </div>
+            //       </div>
+            //     </div>
+            // </div>`;
+
+            let outerHtml =
                 `<div class="row mb-3">
     <div class="col-md-12">
-      <div class="card shadow-sm" data-gameid="{gameid}" data-gamedate="{gamedate}" data-a="{a}" data-h="{h}">
+      <div class="card shadow-sm" data-gameid="{gameid}" data-gamename="{gamename}">
         <div class="card-footer">
-          <strong class="text-primary">{gamedate}</strong>
+          <strong class="text-primary">{gamename}</strong>
+          <span style="float: right;"><span>
         </div>
-        <div class="card-body border-top border-bottom h-md-100" data-gameid="{gameid}" data-key="a">
-          <div class="gb-card-team">{a-team}</div>
-          <div>{a-pitcher} ({a-state}, {a-era})</div>
-          <h5 style="text-align: right">{a-odd}</h5>
-        </div>
-        <div class="card-body h-md-100" data-gameid="{gameid}" data-key="h">
-        <div class="gb-card-team">{h-team}</div>
-        <div>{h-pitcher} ({h-state}, {h-era})</div>
-        <h5 style="text-align: right">{h-odd}</h5>
-        </div>
+        {optionhtml}
       </div>
     </div>
 </div>`;
+            let innerHtml =
+                `<div class="card-body border-top border-bottom h-md-100" data-optid="{optid}" data-gameid="{gameid}" data-optname="{optname}" data-optodd="{optodd}">
+    <div class="gb-card-team">{optname}</div>
+        <div>{optmsg}</div>
+        <h5 style="text-align: right">{optodd}</h5>
+</div>`;
+
             try {
-                Object.keys(data).forEach(function eachKey(gameid) {
-                    let game = html.replaceAll('{gameid}', gameid);
-                    game = game.replaceAll('{gamedate}', data[gameid]['gamedate']);
-                    game = game.replaceAll('{a}', data[gameid]['game']['a']);
-                    game = game.replaceAll('{h}', data[gameid]['game']['h']);
-                    game = game.replaceAll('{a-team}', data[gameid]['game']['a'][0]);
-                    game = game.replaceAll('{a-pitcher}', data[gameid]['competitors']['a'][0]);
-                    game = game.replaceAll('{a-state}', data[gameid]['competitors']['a'][1]);
-                    game = game.replaceAll('{a-era}', data[gameid]['competitors']['a'][2]);
-                    game = game.replaceAll('{a-odd}', data[gameid]['game']['a'][2]);
-                    game = game.replaceAll('{h-team}', data[gameid]['game']['h'][0]);
-                    game = game.replaceAll('{h-pitcher}', data[gameid]['competitors']['h'][0]);
-                    game = game.replaceAll('{h-state}', data[gameid]['competitors']['h'][1]);
-                    game = game.replaceAll('{h-era}', data[gameid]['competitors']['h'][2]);
-                    game = game.replaceAll('{h-odd}', data[gameid]['game']['h'][2]);
-                    // game = String.format(game, gameid,
-                    //     data[gameid]['gamedate'], data[gameid]['game']['a'], data[gameid]['game']['h'],
-                    //     data[gameid]['game']['a'][0], data[gameid]['competitors']['a'][0],
-                    //     data[gameid]['competitors']['a'][1], data[gameid]['competitors']['a'][2], data[gameid]['game']['a'][2],
-                    //     data[gameid]['game']['h'][0], data[gameid]['competitors']['h'][0],
-                    //     data[gameid]['competitors']['h'][1], data[gameid]['competitors']['h'][2], data[gameid]['game']['h'][2]);
-                    $('#index-gamelist').append(game);
+                $.each(games, function (idx, game) {
+                    let gamename = (game['gamedate']) ? '' : (game['gamedate'] + '&nbsp;');
+                    gamename += game['gamename'];
+                    let outer = outerHtml.replaceAll('{gameid}', game['gameid']);
+                    outer = outer.replaceAll('{gamename}', game['gamename']);
+                    let inner = '';
+                    $.each(game['option'], function (idx, option) {
+                        let opt = innerHtml.replaceAll('{optid}', option['optid']);
+                        opt = opt.replaceAll('{gameid}', option['gameid']);
+                        opt = opt.replaceAll('{optname}', option['optname']);
+                        opt = opt.replaceAll('{optodd}', option['optodd']);
+                        opt = opt.replaceAll('{optmsg}', option['optmsg']);
+                        // opt = opt.replaceAll('{option}', JSON.stringify(option).replaceAll());
+                        inner += opt;
+                    });
+                    outer = outer.replaceAll('{optionhtml}', inner);
+                    $('#index-gamelist').append(outer);
                 });
+                // Object.keys(data).forEach(function eachKey(gameid) {
+                //     let game = html.replaceAll('{gameid}', gameid);
+                //     game = game.replaceAll('{gamedate}', data[gameid]['gamedate']);
+                //     game = game.replaceAll('{a}', data[gameid]['game']['a']);
+                //     game = game.replaceAll('{h}', data[gameid]['game']['h']);
+                //     game = game.replaceAll('{a-team}', data[gameid]['game']['a'][0]);
+                //     game = game.replaceAll('{a-pitcher}', data[gameid]['competitors']['a'][0]);
+                //     game = game.replaceAll('{a-state}', data[gameid]['competitors']['a'][1]);
+                //     game = game.replaceAll('{a-era}', data[gameid]['competitors']['a'][2]);
+                //     game = game.replaceAll('{a-odd}', data[gameid]['game']['a'][2]);
+                //     game = game.replaceAll('{h-team}', data[gameid]['game']['h'][0]);
+                //     game = game.replaceAll('{h-pitcher}', data[gameid]['competitors']['h'][0]);
+                //     game = game.replaceAll('{h-state}', data[gameid]['competitors']['h'][1]);
+                //     game = game.replaceAll('{h-era}', data[gameid]['competitors']['h'][2]);
+                //     game = game.replaceAll('{h-odd}', data[gameid]['game']['h'][2]);
+                //     $('#index-gamelist').append(game);
+                // });
                 //
                 $('#index-gamelist .card-body').click(selectGame);
                 $('#index-aside input[name="combination"]').click(function () {
@@ -132,6 +169,25 @@ function loadGame() {
                     //     alert($(this).val());
                     // }
                 });
+                gsTask(function () {
+                    let param = {};
+                    param['url'] = '/gbApi/countgameplays';
+                    gsGet(param, function (list) {
+                        let json = {};
+                        $.each(list, function (idx, data) {
+                            json[data['gameid']] = data["count"];
+                        });
+                        let games = $('div.card[data-gameid]');
+                        $.each(games, function (idx, game) {
+                            let gameid = $(game).attr('data-gameid');
+                            if (json[gameid] == null || json[gameid] == '')
+                                $(game).find('.card-footer span').empty().append('已投注人數:&nbsp;0&nbsp;人');
+                            else
+                                $(game).find('.card-footer span').empty().append('已投注人數:&nbsp;' + json[gameid] + '&nbsp;人');
+                        });
+                    });
+                }, 5);
+                // {"status":"ok","data":[{"gameid":"G10","count":3},{"gameid":"G100","count":2},{"gameid":"G20","count":3},{"gameid":"G50","count":1}]}
                 $('#index-gamelist').hideLoader();
             } catch {
             }
@@ -144,30 +200,31 @@ function selectGame() {
     let x = $(event.target);
     x = (x.hasClass('card-body')) ? x : x.parent('.card-body');
     x.addClass('bg-warning');
+    let p = x.parent('.card');
     //
-    let gameid = x.attr('data-gameid');
-    let gamedate = x.parent('.card').attr('data-gamedate');
-    let xkey = x.attr('data-key');
-    let ykey = (xkey === 'a') ? 'h' : 'a';
-    let xdata = x.parent('.card').attr('data-' + xkey).split(',');
-    let ydata = x.parent('.card').attr('data-' + ykey).split(',');
-    $('div.card-body[data-gameid="' + gameid + '"][data-key="' + ykey + '"]').removeClass('bg-warning');
+    let gameid = p.attr('data-gameid');
+    let gamename = p.attr('data-gamename');
+    // let option = JSON.parse(x.attr('data-option'));
+    let optid = x.attr('data-optid');
+    let optodd = x.attr('data-optodd');
+    let optname = x.attr('data-optname');
+
+    $('div.card-body[data-gameid="' + gameid + '"][data-optid!="' + optid + '"]').removeClass('bg-warning');
     //
     let combination = $('#index-aside input[name="combination"]:checked').val();
-    let outerHtml = `<li class="list-group-item game" data-gameid="{0}"></li>`;
+    let outerHtml = `<li class="list-group-item game" data-optid="{0}" data-gameid="{1}"></li>`;
     let innerHtml = `
-    <input type="hidden" name="key" value="{0}"/>
-    <input type="hidden" name="gameid" value="{1}"/>
-    <input type="hidden" name="bet" value="{2}"/>
-    <input type="hidden" name="totaloddperset" value="{3}"/>
-    <strong>{4} ({3})</strong><br>
-    <small>{5}<br>{6} @ {7}</small>
-    <div class="game-money" {8}><input type="text" name="money" placeholder="本金" /><span>可贏得 0 元</span></div>`;
-    outerHtml = String.format(outerHtml, gameid);
-    innerHtml = String.format(innerHtml, xkey, gameid, xdata['1'], xdata['2'], xdata['0'], gamedate,
-        (xkey === 'a') ? xdata['0'] : ydata['0'],
-        (xkey === 'a') ? ydata['0'] : xdata['0'],
-        (combination === '1') ? '' : 'style="display:none;"');
+    <input type="hidden" name="optid" value="{optid}"/>
+    <input type="hidden" name="optodd" value="{optodd}"/>
+    <strong>{optname}&nbsp;({optodd})</strong><br>
+    <small>{gamename}</small>
+    <div class="game-money" {display}><input type="text" name="money" placeholder="本金" /><span>可贏得 0 元</span></div>`;
+    outerHtml = String.format(outerHtml, optid, gameid);
+    innerHtml = innerHtml.replaceAll('{optid}', optid);
+    innerHtml = innerHtml.replaceAll('{optodd}', optodd);
+    innerHtml = innerHtml.replaceAll('{optname}', optname);
+    innerHtml = innerHtml.replaceAll('{gamename}', gamename);
+    innerHtml = innerHtml.replaceAll('{display}', (combination === '1') ? '' : 'style="display:none;"');
     //       
     let list = $('#index-aside li');
     $(list[5]).hide(); //hide empty
@@ -188,6 +245,7 @@ function selectGame() {
     else {
         $(list[3]).after($(outerHtml).append(innerHtml));
     }
+    //
     $('input[name="money"]').on('keyup', setMoney);
     setMoney();
 };
@@ -200,7 +258,7 @@ function setMoney() {
     if (combination === '1') {
         let games = $('#index-aside li.game');
         $.each(games, function (idx, game) {
-            let odd = $(game).find('input[name="totaloddperset"]').val();
+            let odd = $(game).find('input[name="optodd"]').val();
             let money = $(game).find('input[name="money"]').val();
             let earn = parseInt(odd.toFloat() * money.toFloat());
             $(game).find('.game-money span').empty().append('可贏得 ' + earn + ' 元');
@@ -211,19 +269,19 @@ function setMoney() {
         let group = $('#index-aside li.group');
         let games = $('#index-aside li.game');
         $.each(games, function (idx, game) {
-            let odd = $(game).find('input[name="totaloddperset"]').val();
+            let odd = $(game).find('input[name="optodd"]').val();
             if (odds === 0)
                 odds = odd;
             else
                 odds *= odd.toFloat();
         });
-        odds = odds.toFixed(2);
+        odds = odds.toFixed(2); //四捨五入
         moneys = $(group).find('input[name="money"]').val();
         earns = parseInt(odds * moneys.toFloat());
-        $(group).find('input[name="totaloddperset"]').val(odds);
+        $(group).find('input[name="odd"]').val(odds);
         $(group).find('.group-odd').empty().append('過關賠率 ' + odds);
         $(group).find('.group-money span').empty().append('可贏得 ' + earns + ' 元');
     }
     $('#index-aside li.gs-moneys').empty().append('投注總金額 ' + moneys + ' 元');
     $('#index-aside li.gs-earns').empty().append('最高可贏 ' + earns + ' 元');
-}
+};

@@ -9,7 +9,7 @@ const gbUtil = require('../gbutil');
 class Bet {
   constructor(betInfo) {
     this.betid = '';
-    this.usrid = ''; // userid: kevin3747118
+    this.userid = ''; // userid: kevin3747118
     this.combimation = '';
     this.money = '';
     this.odd = '';
@@ -32,8 +32,8 @@ class Bet {
               db.release();
               reject(err);
             } else {
-              let sql = `insert into tiger_user_bet (usrid, combination, money, odd, createdate) 
-                          values (:usrid, :combination, :money, :odd, :createdate)`;
+              let sql = `insert into tiger_user_bet (userid, combination, money, odd, createdate) 
+                          values (:userid, :combination, :money, :odd, :createdate)`;
               util.execInsertSQL(db, sql, self)
                 .then((res) => {
                   let sql = `select max(betid) as betid from tiger_user_bet`;
@@ -46,9 +46,10 @@ class Bet {
                     let parms = {
                       betid: self.betid,
                       optid: optid.optid,
+                      optodd: optid.optodd,
                       createdate: self.createdate
                     }
-                    p.push(this.tigerUserBet(db, parms))
+                    p.push(this.tigerUserBetOption(db, parms))
                   })
                   return Promise.all(p);
                 })
@@ -82,10 +83,10 @@ class Bet {
     })
   }
 
-  tigerUserBet(conn = null, parms) {
+  tigerUserBetOption(conn = null, parms) {
     let self = this;
     return new Promise((resolve, reject) => {
-      let sql = `insert into tiger_user_bet_option (betid, optid, createdate) values (:betid, :optid, :createdate)`;
+      let sql = `insert into tiger_user_bet_option (betid, optid, optodd, createdate) values (:betid, :optid, :optodd, :createdate)`;
       conn.query(sql, parms, (err, result) => {
         if (err) {
           reject(err);
@@ -137,11 +138,12 @@ class Bet {
 
   static getPersonalBet(conn = null, id) {
     return new Promise((resolve, reject) => {
-      let sql = `select a._id, a.nickname, b.win from gamble.logins a join (select userid, sum(convert(money*odd, signed)) as win
-      from gamble.tiger_user_bet where betid in (
-      select distinct betid from gamble.tiger_user_bet_option where optid in (
-      select optid from gamble.tiger_game_option where status = 1))
-      group by userid) b on a._id = b.userid`;
+      let sql = `select d.gamename, a.combination, a.money, a.odd, c.status, a.createdate
+      from tiger_user_bet a
+      left join tiger_user_bet_option b on a.betid = b.betid
+      left join tiger_game_option c on b.optid = c.optid
+      left join tiger_game d on c.gameid = d.gameid where userid = :userid
+      `;
       util.getConn(conn)
         .then((db) => {
           db.query(sql, id, (err, result) => {

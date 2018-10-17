@@ -118,7 +118,7 @@ gbRouter.get("/statBets", (req, res, next) => {
 
 gbRouter.post("/sendBets", (req, res, next) => {
   const p = [];
-  req.body.forEach((aBet) => {
+  req.body.data.forEach((aBet) => {
     const newBet = new Bet(aBet);
     p.push(newBet.saveToDb())
   });

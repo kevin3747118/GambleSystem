@@ -54,10 +54,12 @@
       </nav>
     </div> -->
 
-    <div class="row mb-2">
+    <div class="row mb-2" style="overflow-y: scroll;">
       <img src="https://securea.mlb.com/assets/images/0/6/4/297796064/cuts/768x432/cut.jpg" class="rounded mx-auto d-block"
         alt="Bracket">
     </div>
+
+    <marquee behavior="scroll" direction="right" scrollamount="6">開賽前，投注人數>2，該投注場次才算成立！！<br>誠心勿鬧！</marquee>
 
     <main role="main" class="container">
       <div class="row">
@@ -92,13 +94,10 @@
             <li class="list-group-item bg-warning text-center">投注單</li>
             <li class="list-group-item bg-light text-center text-primary">選擇玩法</li>
             <li class="list-group-item">
-              <label><input type="radio" name="combination" value="1" checked>  單場投注</label>
+              <label><input type="radio" name="combination" value="1" checked> 單場投注</label>
             </li>
             <li class="list-group-item">
-              <label><input type="radio" name="combination" value="2">  過關</label>
-            </li>
-            <li class="list-group-item">
-              <label><input type="radio" name="combination" value="3">  美聯冠軍、國聯冠軍及世界大賽冠軍</label>
+              <label><input type="radio" name="combination" value="2"> 過關</label>
             </li>
             <li class="list-group-item bg-light text-center text-primary">已選擇賽事</li>
             <li class="list-group-item text-center">請選擇賽事</li>
@@ -112,14 +111,14 @@
               </div>
             </li> -->
             <li class="list-group-item group" style="display: none;">
-              <input type="hidden" name="totaloddperset" />
+              <input type="hidden" name="odd" />
               <span class="group-odd">過關賠率 </span>
               <div class="group-money"><input type="text" name="money" placeholder="本金" />
                 <span>可贏得 0 元</span>
             </li>
             <li class="list-group-item bg-light text-center text-primary gs-moneys">投注總金額 0 元</li>
-            <li class="list-group-item bg-warning text-center gs-earns">最高可贏 0 元</li>
-            <li class="list-group-item text-center"><a class="d-block w100 h100" href="#" onclick="fnBet()">送出</a></li>
+            <li class="list-group-item text-center bg-secondary text-white gs-earns">最高可贏 0 元</li>
+            <li class="list-group-item text-center bg-warning"><a class="d-block w100 h100" href="#" onclick="fnBet()">送出</a></li>
           </ul>
 
         </aside><!-- /.blog-sidebar -->
@@ -193,22 +192,20 @@
             <span aria-hidden="true">&times;</span>
           </button>
           <div class="modal-body">
-            <Table id="index-history">
+            <Table id="index-history" class="text-center">
               <col width="130">
-              <col width="80">
-              <col width="80">
-              <col width="80">
-              <col width="80">
-              <col width="80">
-              <col width="80">
+              <col width="100">
+              <col width="100">
+              <col width="100">
+              <col width="100">
+              <col width="100">
               <tbody>
                 <tr>
                   <th class="border">日期</th>
                   <th class="border">玩法</th>
-                  <th class="border">隊伍1</th>
-                  <th class="border">隊伍2</th>
-                  <th class="border">賠率</th>
+                  <th class="border">投注項目</th>
                   <th class="border">金額</th>
+                  <th class="border">賠率</th>
                   <th class="border">結果</th>
                 </tr>
               </tbody>
@@ -236,13 +233,14 @@
     <!-- <script src="../../assets/js/vendor/holder.min.js"></script> -->
 
     <script>
+
       function fnLogin() {
         if ($('#login-form').validate()) {
           var data = {
             "_id": $('#login-form').find('input[name="_id"]').val(),
             "password": $("#login-form").find('input[name="password"]').val()
           };
-          $.post('https://127.0.0.1:8787/Login', data, function (data, status) {
+          $.post('/Login', data, function (data, status) {
             if (status === 'success') {
               if (data.status === 'SUCCESS') {
                 localStorage.setItem('user', JSON.stringify(data.data));
@@ -263,7 +261,7 @@
             password: $('#register-form').find('input[name="password"]').val(),
             nickname: $('#register-form').find('input[name="nickname"]').val()
           };
-          $.post('https://127.0.0.1:8787/createLogin', data, function (data, status) {
+          $.post('/createLogin', data, function (data, status) {
             if (status === 'success') {
               if (data.status === 'ok') {
                 localStorage.setItem('user', JSON.stringify(data.data));
@@ -286,70 +284,56 @@
         let user = GetUser();
         let error = false;
         if (user != null) {
+          let list = [];
           let games = $('#index-aside li.game');
           let combination = $('#index-aside input[name="combination"]:checked').val();
-          let list = [];
           if (combination === '1') {
             $.each(games, function (idx, game) {
               let data = {
                 "userid": user['_id'],
-                "nickname": user['nickname'],
                 "combination": combination,
-                "game1id": "G1",
-                "game2id": "",
-                "bet1": "BOS",
-                "bet2": "",
-                "money": 100,
-                "totaloddperset": 1.50,
-                "status": 0,
-                "createdate": "20181015"
+                "money": $(game).find('input[name="money"]').val(),
+                "odd": $(game).find('input[name="optodd"]').val(),
+                "userBetOption": []
               };
-              data['game1id'] = $(game).find('input[name="gameid"]').val();
-              data['bet1'] = $(game).find('input[name="bet"]').val();
-              data['money'] = $(game).find('input[name="money"]').val();
-              data['totaloddperset'] = $(game).find('input[name="totaloddperset"]').val();
-              if (data['money'] === 0)
+              let option = {};
+              option['optid'] = $(game).find('input[name="optid"]').val();
+              option['optodd'] = $(game).find('input[name="optodd"]').val();
+              data['userBetOption'].push(option);
+              if (!$.isNumeric(data['money']) || data['money'] === 0)
                 error = true;
               list.push(data);
             });
           } else {
+            let group = $('#index-aside li.group');
             let data = {
               "userid": user['_id'],
-              "nickname": user['nickname'],
               "combination": combination,
-              "game1id": "G1",
-              "game2id": "",
-              "bet1": "BOS",
-              "bet2": "",
-              "money": 100,
-              "totaloddperset": 1.50,
-              "status": 0,
-              "createdate": "20181015"
+              "money": $(group).find('input[name="money"]').val(),
+              "odd": $(group).find('input[name="odd"]').val(),
+              "userBetOption": []
             };
             $.each(games, function (idx, game) {
-              data['game' + (idx + 1).toString() + 'id'] = $(game).find('input[name="gameid"]').val();
-              data['bet' + (idx + 1).toString()] = $(game).find('input[name="bet"]').val();
+              let option = {};
+              option['optid'] = $(game).find('input[name="optid"]').val();
+              option['optodd'] = $(game).find('input[name="optodd"]').val();
+              data['userBetOption'].push(option);
             });
-            let group = $('#index-aside li.group');
-            data['money'] = $(group).find('input[name="money"]').val();
-            data['totaloddperset'] = $(group).find('input[name="totaloddperset"]').val();
-            if (data['money'] === 0)
+            if (!$.isNumeric(data['money']) || data['money'] === 0)
               error = true;
             list.push(data);
           }
           if (error) {
             window.alert('請輸入投注金額，不可為0!');
           } else {
-            $.post('https://127.0.0.1:8787/gbApi/sendBets', {
-              data: list
-            }, function (data, status) {
+            $.post('/gbApi/sendBets', { data: list }, function (data, status) {
               if (status === 'success') {
                 if (data.status === 'ok') {
                   window.alert('投注成功!');
                   loadHistory();
                   $('#history-modal').modal('show');
                 } else {
-                  window.alert('請先登入進行投注!');
+                  window.alert('請先登入!');
                 }
               }
             });
@@ -358,35 +342,28 @@
         return (false);
       };
 
-      // 日期
-      // 玩法
-      // 隊伍1
-      // 隊伍2
-      // 賠率
-      // 金額
-      // 結果
       function loadHistory() {
-        $('#index-history tbody tr:not(:first)').empty();
-        $.post('https://127.0.0.1:8787/gbApi/GetPersonalBet', {
-            'userid': 'tiger'
-          },
-          function (data, status) {
-            if (status === "success") {
-              if (data.status === 'ok') {
-                $.each(data.data, function (idx, rec) {
-                  var html =
-                    `<tr><td class="border">{0}</td><td class="border">{1}</td>
+        let user = GetUser();
+        if (user != null) {
+          $('#index-history tbody tr:not(:first)').empty();
+          $.post('/gbApi/GetPersonalBet', { 'userid': user['_id'] },
+            function (data, status) {
+              if (status === "success") {
+                if (data.status === 'ok') {
+                  $.each(data.data, function (idx, rec) {
+                    var html = `<tr><td class="border">{0}</td><td class="border">{1}</td>
                     <td class="border">{2}</td><td class="border">{3}</td><td class="border">{4}</td>
-                    <td class="border">{5}</td><td class="border">{6}</td></tr>`;
-                  var row = String.format(html, rec['createdate'],
-                    (rec['combination'] === '1') ? '單場投注' : '過關', rec['bet1'], rec['bet2'],
-                    rec['totaloddperset'], rec['money'], rec['status']);
-                  $('#index-history tbody').append(row);
-                });
+                    <td class="border">{5}</td></tr>`;
+                    var row = String.format(html, rec['createdate'],
+                      (rec['combination'] === '1') ? '單場投注' : '過關', rec['gamename'], rec['money'],
+                      rec['odd'], (rec['status'] == 1) ? 'V' : '');
+                    $('#index-history tbody').append(row);
+                  });
+                }
               }
             }
-          }
-        );
+          );
+        }
       }
 
       // function gsGet(param, callback) {
@@ -409,8 +386,7 @@
       // };
 
       $(document).ready(function () {
-        // loadGame();
-        loadWCGame();
+        loadGame();
         loadHistory();
         let user = GetUser();
         if (user != null) {
@@ -419,6 +395,7 @@
           $('#login-modal').modal('show');
         }
       });
+
     </script>
 </body>
 
