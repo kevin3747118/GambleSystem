@@ -60,7 +60,7 @@ class Bet {
                       reject(err);
                     } else {
                       db.release();
-                      resolve({betid: self.betid});//
+                      resolve({betid: self.betid}); //
                     }
                   })
                 })

@@ -102,8 +102,12 @@ gbRouter.get("/statBets", (req, res, next) => {
 });
 
 gbRouter.post("/sendBets", (req, res, next) => {
-  const newBet = new Bet(req.body);
-  newBet.saveToDb()
+  const p = [];
+  req.body.forEach((aBet) => {
+    const newBet = new Bet(aBet);
+    p.push(newBet.saveToDb())
+  });
+  Promise.all(p)
     .then((res) => {
       req.response = {
         status: "ok",
