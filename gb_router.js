@@ -81,15 +81,12 @@ gbRouter.get("/statBets", (req, res, next) => {
 });
 
 gbRouter.post("/sendBets", (req, res, next) => {
-  const betArr = []
-  req.body.data.forEach((bet) => {
-    const newBet = new Bet(bet);
-    betArr.push(newBet.saveToDb(null))
-  });
-  Promise.all(betArr)
-    .then(() => {
+  const newBet = new Bet(req.body);
+  newBet.saveToDb()
+    .then((res) => {
       req.response = {
-        status: "ok"
+        status: "ok",
+        data: res
       };
       next()
     })
@@ -100,20 +97,30 @@ gbRouter.post("/sendBets", (req, res, next) => {
       };
       next();
     })
-  // .then((aBet) => {
-  //   req.response = {
-  //     status: "ok"
-  //   };
-  //   next();
-  // })
-  // .catch((err) => {
-  //   req.response = {
-  //     status: "error",
-  //     errorText: err
-  //   };
-  //   next();
-  // })
 });
+
+
+// gbRouter.post("/sendBets", (req, res, next) => {
+//   const betArr = []
+//   req.body.data.forEach((bet) => {
+//     const newBet = new Bet(bet);
+//     betArr.push(newBet.saveToDb(null))
+//   });
+//   Promise.all(betArr)
+//     .then(() => {
+//       req.response = {
+//         status: "ok"
+//       };
+//       next()
+//     })
+//     .catch((err) => {
+//       req.response = {
+//         status: "error",
+//         errorText: err
+//       };
+//       next();
+//     })
+// });
 
 
 gbRouter.use(function (req, res) {

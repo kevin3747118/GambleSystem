@@ -8,17 +8,13 @@ const gbUtil = require('../gbutil');
 
 class Bet {
   constructor(betInfo) {
-    this.userid = ''; // userid: kevin3747118
-    this.nickname = '';
+    this.betid = '';
+    this.usrid = ''; // userid: kevin3747118
     this.combimation = '';
-    this.game1id = '';
-    this.game2id = '';
-    this.bet1 = '';
-    this.bet2 = '';
     this.money = '';
-    this.totaloddperset = '';
-    this.status = 0;
-    this.createdate = '';
+    this.odd = '';
+    this.userBetOption = ''
+    this.createdate = gbUtil.dateToDbStr(new Date());
     if (betInfo) {
       Object.keys(betInfo).forEach((p) => {
         this[p] = betInfo[p];
@@ -29,24 +25,72 @@ class Bet {
   saveToDb(conn = null) {
     let self = this;
     return new Promise((resolve, reject) => {
-      let sql = `insert into bets (userid, nickname, combination, game1id, game2id, bet1, bet2, 
-                  money, totaloddperset, status, createdate) values (:userid,
-                  :nickname, :combination, :game1id, :game2id, :bet1, :bet2, :money, 
-                  :totaloddperset, :status, :createdate)`;
       util.getConn(conn)
         .then((db) => {
-          db.query(sql, self, (err, result) => {
-            if (!conn) db.release();
-            if (err) throw err;
-            if (result.affectedRows != 1)
-              reject("Save a bet error !");
-            else
-              resolve(self);
+          db.beginTransaction((err) => {
+            if (err) {
+              db.release();
+              reject(err);
+            } else {
+              let sql = `insert into tiger_user_bet (usrid, combination, money, odd, createdate) 
+                          values (:usrid, :combination, :money, :odd, :createdate)`;
+              util.execInsertSQL(db, sql, self)
+                .then((res) => {
+                  let sql = `select max(betid) as betid from tiger_user_bet`;
+                  return util.execSimpleSQL(db, sql)
+                })
+                .then((betid) => {
+                  self.betid = betid[0].betid
+                  const p = [];
+                  self.userBetOption.forEach((optid) => {
+                    let parms = {
+                      betid: self.betid,
+                      optid: optid.optid,
+                      createdate: self.createdate
+                    }
+                    p.push(this.tigerUserBet(db, parms))
+                  })
+                  return Promise.all(p);
+                })
+                .then(() => {
+                  db.commit((err) => {
+                    if (err) {
+                      db.rollback();
+                      db.release();
+                      reject(err);
+                    } else {
+                      db.release();
+                      resolve({betid: self.betid});//
+                    }
+                  })
+                })
+                .catch((err) => {
+                  db.rollback();
+                  db.release();
+                  reject(err);
+                })
+            }
           })
         })
         .catch((err) => {
+          db.rollback();
+          db.release();
           reject(err);
         })
+    })
+  }
+
+  tigerUserBet(conn = null, parms) {
+    let self = this;
+    return new Promise((resolve, reject) => {
+      let sql = `insert into tiger_user_bet_option (betid, optid, createdate) values (:betid, :optid, :createdate)`;
+      conn.query(sql, parms, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      })
     })
   }
 

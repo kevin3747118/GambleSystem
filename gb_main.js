@@ -58,6 +58,8 @@ function startGBServer() {
   const bodyParser = require('body-parser');
   const gbApp = express();
 
+  gbApp.disable('x-powered-by');
+
   gbApp.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     // res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -66,7 +68,6 @@ function startGBServer() {
     // res.header("Content-Type", "application/json;charset=utf-8");
     next();
   });
-
 
   gbApp.use(bodyParser.urlencoded({
     extended: true

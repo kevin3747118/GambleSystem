@@ -45,7 +45,8 @@ class Login {
                   else
                     resolve(self);
                 })
-              }).catch((err) => {
+              })
+              .catch((err) => {
                 reject(err);
               });
           }
