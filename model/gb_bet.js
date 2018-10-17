@@ -60,7 +60,9 @@ class Bet {
                       reject(err);
                     } else {
                       db.release();
-                      resolve({betid: self.betid}); //
+                      resolve({
+                        betid: self.betid
+                      }); //
                     }
                   })
                 })
@@ -116,8 +118,12 @@ class Bet {
 
   static statBet(conn = null) {
     return new Promise((resolve, reject) => {
-      let sql = ` select userid, nickname, sum(convert(money*totaloddperset, signed)) as money
-                  from bets where status = 3 group by nickname, userid`;
+      // let sql = ` select userid, nickname, sum(convert(money*totaloddperset, signed)) as money
+      //             from bets where status = 3 group by nickname, userid`;
+      let sql = `select userid, sum(convert(money*odd, signed)) as win from gamble.tiger_user_bet where betid in (
+        select distinct betid from gamble.tiger_user_bet_option where optid in (
+        select optid from gamble.tiger_game_option where status = 1))
+        group by userid`
       util.execSimpleSQL(conn, sql, "SEL")
         .then((res) => {
           resolve(res)
@@ -130,7 +136,7 @@ class Bet {
 
   static getPersonalBet(conn = null, id) {
     return new Promise((resolve, reject) => {
-      let sql = `select * from bets where userid = :userid`;
+      let sql = `select * from tiger_user_bet where userid = :userid`;
       util.getConn(conn)
         .then((db) => {
           db.query(sql, id, (err, result) => {
