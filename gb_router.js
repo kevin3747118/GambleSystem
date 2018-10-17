@@ -62,8 +62,23 @@ gbRouter.post("/getPersonalBet", (req, res, next) => {
     })
 });
 
-gbRouter.get("/getGamePlays", (req, res, next) => {
+gbRouter.get("/countgameplays", (req, res, next) => {
   //取得每場比賽，投注人數
+  Game.countGamePlays()
+    .then((res) => {
+      req.response = {
+        status: "ok",
+        data: res
+      };
+      next();
+    })
+    .catch((err) => {
+      req.response = {
+        status: "error",
+        errorText: err
+      };
+      next();
+    })
 })
 
 gbRouter.get("/insertGameOptions", (req, res, next) => {

@@ -55,12 +55,15 @@ class Game {
     })
   }
 
-  static getGamePlays(conn = null) {
+  static countGamePlays(conn = null) {
     return new Promise((resolve, reject) => {
-      let sql = `select`;
+      let sql = `select a.gameid, count(1) as count
+      from gamble.tiger_game_option a
+      left join gamble.tiger_user_bet_option b on a.optid = b.optid
+      group by a.gameid`;
       util.execSimpleSQL(conn, sql)
         .then((res) => {
-
+          resolve(res)
         })
         .catch((err) => {
           reject(err)

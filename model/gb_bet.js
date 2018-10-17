@@ -137,7 +137,11 @@ class Bet {
 
   static getPersonalBet(conn = null, id) {
     return new Promise((resolve, reject) => {
-      let sql = `select * from tiger_user_bet where userid = :userid`;
+      let sql = `select a._id, a.nickname, b.win from gamble.logins a join (select userid, sum(convert(money*odd, signed)) as win
+      from gamble.tiger_user_bet where betid in (
+      select distinct betid from gamble.tiger_user_bet_option where optid in (
+      select optid from gamble.tiger_game_option where status = 1))
+      group by userid) b on a._id = b.userid`;
       util.getConn(conn)
         .then((db) => {
           db.query(sql, id, (err, result) => {
