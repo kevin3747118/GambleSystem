@@ -120,10 +120,11 @@ class Bet {
     return new Promise((resolve, reject) => {
       // let sql = ` select userid, nickname, sum(convert(money*totaloddperset, signed)) as money
       //             from bets where status = 3 group by nickname, userid`;
-      let sql = `select userid, sum(convert(money*odd, signed)) as win from gamble.tiger_user_bet where betid in (
-        select distinct betid from gamble.tiger_user_bet_option where optid in (
-        select optid from gamble.tiger_game_option where status = 1))
-        group by userid`
+      let sql = `select a._id, a.nickname, b.win from gamble.logins a join (select userid, sum(convert(money*odd, signed)) as win
+      from gamble.tiger_user_bet where betid in (
+      select distinct betid from gamble.tiger_user_bet_option where optid in (
+      select optid from gamble.tiger_game_option where status = 1))
+      group by userid) b on a._id = b.userid`
       util.execSimpleSQL(conn, sql, "SEL")
         .then((res) => {
           resolve(res)
