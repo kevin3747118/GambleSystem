@@ -7,14 +7,14 @@
         "gameid": "G10",
         "optname": "Boston Red Sox",
         "optodd": 2.05,
-        "optmsg": ""
+        "optmsg": "Rick Porcello  17W7L  4.28ERA"
       },
       {
         "optid": "G10HOU",
         "gameid": "G10",
         "optname": "Huston Astros",
         "optodd": 1.50,
-        "optmsg": ""
+        "optmsg": "Charles Morton  15W3L  3.13ERA"
       }
     ]
   },
@@ -27,14 +27,14 @@
         "gameid": "G20",
         "optname": "Milwaukee Brewers",
         "optodd": 2.30,
-        "optmsg": ""
+        "optmsg": "Wade Miley  5W2L  2.57ERA"
       },
       {
         "optid": "G20LAD",
         "gameid": "G20",
         "optname": "Los Angeles Dodgers",
         "optodd": 1.40,
-        "optmsg": ""
+        "optmsg": "Clayton Kershaw  9W5L  2.73ERA"
       }
     ]
   },
