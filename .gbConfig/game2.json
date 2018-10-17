@@ -1,24 +1,115 @@
-{
-  "G1": {
-    "game": {
-      "a": ["Milwaukee Brewers", "MIL", "2.30"],
-      "h": ["Losanger Dodgers", "LAD", "1.40"]
-    },
-    "competitors": {
-      "a": ["Clayton Kershaw", "9-5", "2.73 ERA", "https://content.mlb.com/images/headshots/current/60x60/477132.png"],
-      "h": ["Gio Gonzalez", "10-11", "3.50 ERA", "https://content.mlb.com/images/headshots/current/60x60/461829.png"]
-    },
-    "gamedate": 20181013
+[{
+    "gameid": "G10",
+    "gamename": "BOS vs. HOU",
+    "gamedate": "20181018",
+    "option": [{
+        "optid": "G10BOS",
+        "gameid": "G10",
+        "optname": "Boston Red Sox",
+        "optodd": 2.05,
+        "optmsg": ""
+      },
+      {
+        "optid": "G10HOU",
+        "gameid": "G10",
+        "optname": "Huston Astros",
+        "optodd": 1.50,
+        "optmsg": ""
+      }
+    ]
   },
-  "G2": {
-    "game": {
-      "a": ["Huston Astros", "HOU", "1.85"],
-      "h": ["Boston Red Sox", "BOS", "1.65"]
-    },
-    "competitors": {
-      "a": ["Justin Verlander", "16-9", "2.52 ERA", "https://content.mlb.com/images/headshots/current/60x60/434378.png"],
-      "h": ["Chris Sale", "12-4", "2.11 ERA", "https://content.mlb.com/images/headshots/current/60x60/519242.png"]
-    },
-    "gamedate": 20181014
+  {
+    "gameid": "G20",
+    "gamename": "MIL vs. LAD",
+    "gamedate": "20181018",
+    "option": [{
+        "optid": "G20MIL",
+        "gameid": "G20",
+        "optname": "Milwaukee Brewers",
+        "optodd": 2.30,
+        "optmsg": ""
+      },
+      {
+        "optid": "G20LAD",
+        "gameid": "G20",
+        "optname": "Los Angeles Dodgers",
+        "optodd": 1.40,
+        "optmsg": ""
+      }
+    ]
+  },
+  {
+    "gameid": "G50",
+    "gamename": "ALDS",
+    "gamedate": "",
+    "option": [{
+        "optid": "G50HOU",
+        "gameid": "G50",
+        "optname": "Huston Astros",
+        "optodd": 2.15,
+        "optmsg": ""
+      },
+      {
+        "optid": "G50BOS",
+        "gameid": "G50",
+        "optname": "Boston Red Sox",
+        "optodd": 1.45,
+        "optmsg": ""
+      }
+    ]
+  },
+  {
+    "gameid": "G60",
+    "gamename": "NLDS",
+    "gamedate": "",
+    "option": [{
+        "optid": "G60LAD",
+        "gameid": "G60",
+        "optname": "Los Angeles Dodgers",
+        "optodd": 1.45,
+        "optmsg": ""
+      },
+      {
+        "optid": "G60MIL",
+        "gameid": "G60",
+        "optname": "Milwaukee Brewers",
+        "optodd": 2.15,
+        "optmsg": ""
+      }
+    ]
+  },
+  {
+    "gameid": "G100",
+    "gamename": "MLB World Champion",
+    "gamedate": "",
+    "option": [{
+        "optid": "G100HOU",
+        "gameid": "G100",
+        "optname": "HOU",
+        "optodd": 3.25,
+        "optmsg": "去年世界冠軍!!"
+      },
+      {
+        "optid": "G100BOS",
+        "gameid": "G100",
+        "optname": "BOS",
+        "optodd": 2.25,
+        "optmsg": ""
+      },
+      {
+        "optid": "G100MIL",
+        "gameid": "G100",
+        "optname": "MIL",
+        "optodd": 4.25,
+        "optmsg": "YELICH大爆發"
+      },
+      {
+        "optid": "G100LAD",
+        "gameid": "G100",
+        "optname": "LAD",
+        "optodd": 3.10,
+        "optmsg": ""
+      }
+    ]
   }
-}
+]

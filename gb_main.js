@@ -114,7 +114,7 @@ function startGBServer() {
   // });
 
   gbApp.get("/getGames", (req, res, next) => {
-    const gameRead = fs.readFileSync(configDir + '/game.json', 'utf8')
+    const gameRead = fs.readFileSync(configDir + '/game2.json', 'utf8')
     const gameReturn = JSON.stringify(JSON.parse(gameRead));
     res.json({
       status: "ok",
