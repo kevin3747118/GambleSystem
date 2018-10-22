@@ -10,6 +10,7 @@ logDir = './log';
 
 const logger = require('./gb_logger').logger;
 const Bet = require('./model/gb_bet').Bet;
+const Game = require('./model/gb_game').Game;
 
 const mysql = require('mysql');
 
@@ -120,24 +121,49 @@ function startGBServer() {
     next()
   })
 
-  gbApp.get("/countgameplays", (req, res, next) => {
-    //取得每場比賽，投注人數
+  gbApp.get("/countGames", (req, res, next) => {
     Game.countGamePlays()
-      .then((res) => {
-        req.response = {
+      .then((results) => {
+        res.json({
           status: "ok",
-          data: res
-        };
+          data: results
+        });
         next();
       })
       .catch((err) => {
-        req.response = {
+        res.json({
           status: "error",
           errorText: err
-        };
+        });
         next();
       })
+    // const gameRead = fs.readFileSync(configDir + '/game3.json', 'utf8')
+    // const gameReturn = JSON.stringify(JSON.parse(gameRead));
+    // res.json({
+    //   status: "ok",
+    //   data: gameReturn
+    // });
+    // next()
   })
+
+  // gbApp.get("/countGames", (req, res, next) => {
+  //   //取得每場比賽，投注人數
+  //   Game.countGamePlays()
+  //     .then((res) => {
+  //       res.json({
+  //         status: "ok",
+  //         data: '123'
+  //       });
+  //       next();
+  //     })
+  //     .catch((err) => {
+  //       req.response = {
+  //         status: "error",
+  //         errorText: err
+  //       };
+  //       next();
+  //     })
+  // })
 
   gbApp.get("/getBetStatus", (req, res, next) => {
     Bet.betStatus()

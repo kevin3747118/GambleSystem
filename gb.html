@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="https://www.mlbstatic.com/mlb.com/builds/site-core/e10a7b41dbb151e6fe4c4a7a4425260df506cac9_1539117300/images/favicon.png">
+
+  <title>GambleSystem</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="gb/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+  <link href="gb/css/gb.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <header class="gb-header sticky-top">
+      <div class="nav-scroller">
+        <div class="nav d-flex justify-content-around align-items-stretch">
+          <!-- <span class="px-2 text-dark">分區對戰圖</span> -->
+          <a href="#"><img class="mlb-logo" src="gb/img/mlb_logo.png" /></a>
+          <!-- <span class="px-2 text-dark"></span> -->
+          <div><span id="index-user"></span>&nbsp;&nbsp;
+            <a class="px-2 text-dark" href="#" onclick="fnHistory()">投注紀錄</a>&nbsp;&nbsp;
+            <a class="px-2 text-dark" href="#" onclick="fnLogout()">登出</a></div>
+        </div>
+      </div>
+
+      <!--<div class="row justify-content-between align-items-center">
+        <div class="col-4 pt-1">
+          <a class="text-muted px-5" href="#">LL</a>
+        </div>
+        <div class="col-4 text-center">
+          <a class="gs-header-logo text-dark" href="#">MLB LOGO</a>
+        </div>
+        <div class="col-4 text-right">
+          <a class="text-muted px-5" href="#" data-toggle="modal" data-target="#login-modal">Login</a>
+        </div>
+      </div> -->
+    </header>
+
+    <!-- <div class="nav-scroller py-1 mb-2">
+      <nav class="nav d-flex justify-content-between">
+        <a class="p-2 text-muted" href="#">分區對戰圖</a>
+        <a class="p-2 text-muted" href="#">今天</a>
+      </nav>
+    </div> -->
+
+    <div class="gb-playerprofile row my-3">
+      <div class="gb-away col-md-6 text-center">
+        <img src="https://prod-gameday.mlbstatic.com/responsive-gameday-assets/1.2.0/images/players/summary_photo_default.svg" width="510" height="330"/>
+        <br>
+        <strong></strong>
+        <br>
+        <span></span>
+      </div>
+      <div class="gb-home col-md-6 text-center">
+        <img src="https://prod-gameday.mlbstatic.com/responsive-gameday-assets/1.2.0/images/players/summary_photo_default.svg" width="510" height="330">
+        <br>
+        <strong></strong>
+        <br>
+        <span></span>
+      </div>
+    </div>
+
+    <marquee behavior="scroll" direction="right" scrollamount="6">開賽前，投注人數>2，該投注場次才算成立！！誠心勿鬧！</marquee>
+
+    <main role="main" class="container">
+      <div class="row">
+
+        <div id="index-gamelist" class="col-md-8 blog-main">
+
+          <!-- <div class="row mb-2">
+            <div class="col-md-12">
+              <div class="card mb-4 shadow-sm">
+                <div class="card-footer">
+                  <strong class="text-primary">2018/10/13 08:30 AM</strong>
+                </div>
+                <div class="card-body border-top border-bottom h-md-100">
+                  <div class="gb-card-team">Los Angeles Dodgers (0-0)</div>
+                  <div class="gb-card-">Clayton Kershaw (9-5, 2.73 ERA)</div>
+                  <h5 style="text-align: right">1.55</h5>
+                </div>
+                <div class="card-body h-md-100">
+                  <div class="gb-card-team">@ Milwaukee Brewers (0-0)</div>
+                  <div class="gb-card-">Gio Gonzalez (10-11, 4.21 ERA)</div>
+                  <h5 style="text-align: right">1.95</h5>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+        </div>
+
+        <aside class="col-md-4 blog-sidebar">
+
+          <ul id="index-aside" class="list-group mb-3">
+            <li class="list-group-item bg-warning text-center">投注單</li>
+            <li class="list-group-item bg-light text-center text-primary">選擇玩法</li>
+            <li class="list-group-item">
+              <label><input type="radio" name="combination" value="1" checked> 單場投注</label>
+            </li>
+            <li class="list-group-item">
+              <label><input type="radio" name="combination" value="2" disabled> 過關</label>
+            </li>
+            <li class="list-group-item bg-light text-center text-primary">已選擇賽事</li>
+            <li class="list-group-item text-center">請選擇賽事</li>
+            <!-- <li class="list-group-item" style="padding: 0; display: inline-block;" data-gameid="">
+              <div styleclass="float-left"><a>X</a></div>
+              <div class="float-right">
+                <strong>Los Angeles Dodgers (1.55)</strong><br>
+                <small>2018/10/13 08:30 AM<br>
+                  Los Angeles Dodgers @ Milwaukee Brewers</small>
+                <label><input type="text" name="money" placeholder="本金" /> 可贏得 150 元</label>
+              </div>
+            </li> -->
+            <li class="list-group-item group" style="display: none;">
+              <input type="hidden" name="odd" />
+              <span class="group-odd">過關賠率 </span>
+              <div class="group-money"><input type="text" name="money" placeholder="本金" />
+                <span>可贏得 0 元</span>
+            </li>
+            <li class="list-group-item bg-light text-center text-primary gs-moneys">投注總金額 0 元</li>
+            <li class="list-group-item text-center bg-secondary text-white gs-earns">最高可贏 0 元</li>
+            <li class="list-group-item text-center bg-warning"><a class="d-block w100 h100" href="#" onclick="fnBet()">送出</a></li>
+          </ul>
+
+        </aside><!-- /.blog-sidebar -->
+
+      </div><!-- /.row -->
+
+    </main><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+    <!--Login Model-->
+    <div id="login-modal" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+      aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <!-- <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div> -->
+          <div class="modal-body">
+            <form id="login-form" method="post" onsubmit="return fnLogin()">
+              <h3 class="login-title text-center">Login</h3>
+              <div class="form-group">
+                <input class="form-control" type="text" name="_id" placeholder="id" required>
+              </div>
+              <div class="form-group">
+                <input class="form-control" type="password" name="password" placeholder="password" required>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-info btn-block" type="submit">登入</button>
+                <!-- <button class="btn btn-info btn-block" data-dismiss="modal">離開</button> -->
+              </div>
+            </form>
+            <form id="register-form" method="post" onsubmit="return fnRegister()">
+              <h3 class="login-title text-center">Register</h3>
+              <div class="form-group">
+                <input class="form-control" type="text" name="_id" placeholder="id" required>
+              </div>
+              <div class="form-group">
+                <input class="form-control" type="password" name="password" placeholder="password" required>
+              </div>
+              <div class="form-group">
+                <input class="form-control" type="text" name="nickname" placeholder="nickname">
+              </div>
+              <div class="form-group">
+                <button class="btn btn-info btn-block" type="submit">註冊</button>
+                <!-- <button class="btn btn-info btn-block" data-dismiss="modal">離開</button> -->
+              </div>
+            </form>
+          </div>
+          <!-- <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div> -->
+        </div>
+      </div>
+    </div>
+
+    <!--History Model-->
+    <div id="history-modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+      aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <div class="modal-body">
+            <Table id="index-history" class="text-center">
+              <col width="130">
+              <col width="100">
+              <col width="100">
+              <col width="100">
+              <col width="100">
+              <col width="100">
+              <tbody>
+                <tr>
+                  <th class="border">日期</th>
+                  <th class="border">玩法</th>
+                  <th class="border">投注項目</th>
+                  <th class="border">金額</th>
+                  <th class="border">賠率</th>
+                  <th class="border">結果</th>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
+          <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <!-- if CDN not exists call local file-->
+    <!-- <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script> -->
+    <script src="gb/js/popper.min.js"></script>
+    <script src="gb/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
+    <script src="gb/js/gb.js?20"></script>
+    <!-- <script src="../../assets/js/vendor/holder.min.js"></script> -->
+
+    <script>
+
+      function fnLogin() {
+        if ($('#login-form').validate()) {
+          var data = {
+            "_id": $('#login-form').find('input[name="_id"]').val(),
+            "password": $("#login-form").find('input[name="password"]').val()
+          };
+          $.post('/Login', data, function (data, status) {
+            if (status === 'success') {
+              if (data.status === 'SUCCESS') {
+                localStorage.setItem('user', JSON.stringify(data.data));
+                window.location = '/';
+              } else {
+                window.alert(data.status);
+              }
+            }
+          });
+        }
+        return (false);
+      };
+
+      function fnRegister() {
+        if ($("#register-form").validate()) {
+          var data = {
+            _id: $('#register-form').find('input[name="_id"]').val(),
+            password: $('#register-form').find('input[name="password"]').val(),
+            nickname: $('#register-form').find('input[name="nickname"]').val()
+          };
+          $.post('/createLogin', data, function (data, status) {
+            if (status === 'success') {
+              if (data.status === 'ok') {
+                localStorage.setItem('user', JSON.stringify(data.data));
+                window.location = '/';
+              } else {
+                window.alert(data.status);
+              }
+            }
+          });
+        }
+        return (false);
+      };
+
+      function fnLogout() {
+        localStorage.removeItem('user');
+        window.location = '/';
+      };
+
+      function fnBet() {
+        let user = GetUser();
+        let error = false;
+        if (user != null) {
+          let list = [];
+          let games = $('#index-aside li.game');
+          let combination = $('#index-aside input[name="combination"]:checked').val();
+          if (combination === '1') {
+            $.each(games, function (idx, game) {
+              let data = {
+                "userid": user['_id'],
+                "combination": combination,
+                "money": $(game).find('input[name="money"]').val(),
+                "odd": $(game).find('input[name="optodd"]').val(),
+                "userBetOption": []
+              };
+              let option = {};
+              option['optid'] = $(game).find('input[name="optid"]').val();
+              option['optodd'] = $(game).find('input[name="optodd"]').val();
+              data['userBetOption'].push(option);
+              if (!$.isNumeric(data['money']) || data['money'] === 0)
+                error = true;
+              list.push(data);
+            });
+          } else {
+            let group = $('#index-aside li.group');
+            let data = {
+              "userid": user['_id'],
+              "combination": combination,
+              "money": $(group).find('input[name="money"]').val(),
+              "odd": $(group).find('input[name="odd"]').val(),
+              "userBetOption": []
+            };
+            $.each(games, function (idx, game) {
+              let option = {};
+              option['optid'] = $(game).find('input[name="optid"]').val();
+              option['optodd'] = $(game).find('input[name="optodd"]').val();
+              data['userBetOption'].push(option);
+            });
+            if (!$.isNumeric(data['money']) || data['money'] === 0)
+              error = true;
+            list.push(data);
+          }
+          if (error) {
+            window.alert('請輸入投注金額，不可為0!');
+          } else {
+            $.post('/gbApi/sendBets', { data: list }, function (data, status) {
+              if (status === 'success') {
+                if (data.status === 'ok') {
+                  window.alert('投注成功!');
+                  loadHistory();
+                  $('#history-modal').modal('show');
+                } else {
+                  window.alert('請先登入!');
+                }
+              }
+            });
+          }
+        }
+        return (false);
+      };
+
+      function fnHistory() {
+        let user = GetUser();
+        if (user != null) {
+          $('#index-history tbody tr:not(:first)').empty();
+          $.post('/gbApi/GetPersonalBet', { 'userid': user['_id'] },
+            function (data, status) {
+              if (status === "success") {
+                if (data.status === 'ok') {
+                  $.each(data.data, function (idx, rec) {
+                    var html = `<tr><td class="border">{0}</td><td class="border">{1}</td>
+                    <td class="border">{2}</td><td class="border">{3}</td><td class="border">{4}</td>
+                    <td class="border">{5}</td></tr>`;
+                    var row = String.format(html, rec['createdate'],
+                      (rec['combination'] === '1') ? '單場投注' : '過關', rec['gamename'], rec['money'],
+                      rec['odd'], (rec['status'] == 1) ? 'V' : '');
+                    $('#index-history tbody').append(row);
+                  });
+                }
+              }
+            }
+          );
+        }
+      };
+
+      function isLogin() {
+
+      };
+
+      $(document).ready(function () {
+        loadGame();
+        // let user = GetUser();
+        // if (user != null) {
+        //   $('#index-user').append("HI! " + user['nickname']);
+        // } else {
+        //   $('#login-modal').modal('show');
+        // }
+      });
+
+    </script>
+</body>
+
+</html>
