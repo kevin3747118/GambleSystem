@@ -120,15 +120,24 @@ function startGBServer() {
     next()
   })
 
-  // gbApp.get("/getWCGames", (req, res, next) => {
-  //   const wcgameRead = fs.readFileSync(configDir + '/wc.json', 'utf8')
-  //   const wcgameReturn = JSON.stringify(JSON.parse(wcgameRead));
-  //   res.json({
-  //     status: "ok",
-  //     data: wcgameReturn
-  //   });
-  //   next()
-  // })
+  gbApp.get("/countgameplays", (req, res, next) => {
+    //取得每場比賽，投注人數
+    Game.countGamePlays()
+      .then((res) => {
+        req.response = {
+          status: "ok",
+          data: res
+        };
+        next();
+      })
+      .catch((err) => {
+        req.response = {
+          status: "error",
+          errorText: err
+        };
+        next();
+      })
+  })
 
   gbApp.get("/getBetStatus", (req, res, next) => {
     Bet.betStatus()

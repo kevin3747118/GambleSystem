@@ -5,14 +5,14 @@
   "option": [{
       "optid": "G100BOS",
       "gameid": "G100",
-      "optname": "BOS",
+      "optname": "Boston Rex Sox",
       "optodd": 1.55,
       "optmsg": ""
     },
     {
       "optid": "G100LAD",
       "gameid": "G100",
-      "optname": "LAD",
+      "optname": "Los Angeles Dodgers",
       "optodd": 1.95,
       "optmsg": ""
     }
