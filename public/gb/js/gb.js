@@ -72,11 +72,11 @@ function gsPost(param, callback) {
 };
 
 //載入game
-function loadGame() {
+loadGame = () => {
     $('#index-gamelist').showLoader();
     let param = {};
     param['url'] = '/getGames';
-    gsGet(param, function (games) {
+    gsGet(param, (games) => {
         if (Array.isArray(games)) {
 
             if (games[0].gameinfo.away.playerprofile['name'] === 'TBD') {
@@ -99,7 +99,7 @@ function loadGame() {
                 $('.gb-playerprofile .gb-home').find('img').attr('src', games[0].gameinfo.home.playerprofile['pic']);
                 $('.gb-playerprofile .gb-home').find('strong').empty().append(record);
                 $('.gb-playerprofile .gb-home').find('span').empty().append(games[0].gameinfo.home.playerprofile['quote']);
-                $('.gb-playerprofile .gb-home').click(function () { window.open(games[0].gameinfo.home.playerprofile['data'], '_target'); });
+                $('.gb-playerprofile .gb-home').click(() => { window.open(games[0].gameinfo.home.playerprofile['data'], '_target'); });
                 $('.gb-playerprofile .gb-home').css({ "cursor": "pointer" });
             }
 
@@ -119,18 +119,18 @@ function loadGame() {
                 `<div class="card-body border-top border-bottom h-md-100" data-optid="{optid}" data-gameid="{gameid}" data-optname="{optname}" data-optodd="{optodd}">
     <div class="gb-card-team">{optname}</div>
         <div>{optmsg}</div>
-        <span class="gb-card-user"><span/>
+        <span class="gb-card-user"></span>
         <h5 style="text-align: right">{optodd}</h5>
 </div>`;
 
             try {
-                $.each(games, function (idx, game) {
+                $.each(games, (idx, game) => {
                     let gamename = (game['gamedate']) ? '' : (game['gamedate'] + '&nbsp;');
                     gamename += game['gamename'];
                     let outer = outerHtml.replaceAll('{gameid}', game['gameid']);
                     outer = outer.replaceAll('{gamename}', game['gamename']);
                     let inner = '';
-                    $.each(game['option'], function (idx, option) {
+                    $.each(game['option'], (idx, option) => {
                         let opt = innerHtml.replaceAll('{optid}', option['optid']);
                         opt = opt.replaceAll('{gameid}', option['gameid']);
                         opt = opt.replaceAll('{optname}', option['optname']);
@@ -146,13 +146,13 @@ function loadGame() {
                 $('#index-gamelist .card-body').click(selectGame);
                 $('#index-aside input[name="combination"]').click(selectCombination);
                 gsTask(() => {
-                    $.get('/countgameplays', { },
-                        function (data, status) {
+                    $.get('/countgames', {},
+                        (data, status) => {
                             if (status === "success") {
                                 if (data.status === 'ok') {
                                     let json = {};
-                                    $.each(list, function (idx, data) {
-                                        json[data['gameid']] = data["count"];
+                                    $.each(data.data, function (idx, item) {
+                                        json[item['gameid']] = item["count"];
                                     });
                                     let games = $('div.card[data-gameid]');
                                     $.each(games, function (idx, game) {
@@ -167,29 +167,33 @@ function loadGame() {
                         }
                     );
                 }, 5);
-                gsTask(() => {
-                    $.get('/getbetstatus', { },
-                        function (data, status) {
-                            if (status === "success") {
-                                if (data.status === 'ok') {
-                                    Object.keys(data.data).forEach((key) => {
-                                        let userid = '';
-                                        data.data[key].forEach((user) => {
-                                            userid += user['userid'] + '($' + user['money'] + '),';
-                                        });
-                                        $('div.card-body[data-optid="' + key + '"]').find('span.gb-card-user').append(userid);
-                                    });
-                                }
-                            }
-                        }
-                    );
-                }, 5);
+                gsTask(betstatus, 5);
                 // {"status":"ok","data":[{"gameid":"G10","count":3},{"gameid":"G100","count":2},{"gameid":"G20","count":3},{"gameid":"G50","count":1}]}
                 $('#index-gamelist').hideLoader();
             } catch {
             }
         }
     });
+};
+
+function betstatus() {
+    $.get('/getbetstatus', {},
+        (data, status) => {
+            if (status === "success") {
+                if (data.status === 'ok') {
+                    Object.keys(data.data).forEach((key) => {
+                        let userid = '';
+                        data.data[key].forEach((user) => {
+                            userid += ((user['nickname'] === '') ? '' : user['nickname']) + '($' + user['money'] + '), ';
+                        });
+                        userid = userid.trim();
+                        userid = userid.substring(0, userid.length - 1);
+                        $('div.card-body[data-optid="' + key + '"]').find('span.gb-card-user').html(userid);
+                    });
+                }
+            }
+        }
+    );
 };
 
 function selectGame() {
