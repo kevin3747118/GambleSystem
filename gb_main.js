@@ -9,6 +9,7 @@ configDir = './.gbConfig';
 logDir = './log';
 
 const logger = require('./gb_logger').logger;
+const Bet = require('./model/gb_bet').Bet;
 
 const mysql = require('mysql');
 
@@ -99,22 +100,18 @@ function startGBServer() {
   });
 
   gbApp.get('/', function (req, res) {
+    res.redirect('/worldchampion')
+  });
+
+  gbApp.get('/worldchampion', (req, res) => {
     res.sendFile(__dirname + "/gb.html", 'utf8', function (err) { // change path
       if (err)
         logger.error("dg page load error:" + err);
     });
-  });
-
-  // gbApp.get('/gb', function (req, res) {
-  //   // res.redirect("/gb.html");
-  //   res.sendFile(__dirname + "/gb.html", 'utf8', function (err) {
-  //     if (err)
-  //       logger.error("dg page load error:" + err);
-  //   });
-  // });
+  })
 
   gbApp.get("/getGames", (req, res, next) => {
-    const gameRead = fs.readFileSync(configDir + '/game2.json', 'utf8')
+    const gameRead = fs.readFileSync(configDir + '/game3.json', 'utf8')
     const gameReturn = JSON.stringify(JSON.parse(gameRead));
     res.json({
       status: "ok",
@@ -123,14 +120,32 @@ function startGBServer() {
     next()
   })
 
-  gbApp.get("/getWCGames", (req, res, next) => {
-    const wcgameRead = fs.readFileSync(configDir + '/wc.json', 'utf8')
-    const wcgameReturn = JSON.stringify(JSON.parse(wcgameRead));
-    res.json({
-      status: "ok",
-      data: wcgameReturn
-    });
-    next()
+  // gbApp.get("/getWCGames", (req, res, next) => {
+  //   const wcgameRead = fs.readFileSync(configDir + '/wc.json', 'utf8')
+  //   const wcgameReturn = JSON.stringify(JSON.parse(wcgameRead));
+  //   res.json({
+  //     status: "ok",
+  //     data: wcgameReturn
+  //   });
+  //   next()
+  // })
+
+  gbApp.get("/getBetStatus", (req, res, next) => {
+    Bet.betStatus()
+      .then((betStatus) => {
+        res.json({
+          status: "ok",
+          data: betStatus
+        });
+        next()
+      })
+      .catch((err) => {
+        res.json({
+          status: "error",
+          data: err
+        });
+        next()
+      })
   })
 
   gbApp.post('/login', (req, res, next) => {

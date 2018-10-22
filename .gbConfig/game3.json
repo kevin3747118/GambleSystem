@@ -1,0 +1,20 @@
+[{
+  "gameid": "G100",
+  "gamename": "MLB World Champion",
+  "gamedate": "",
+  "option": [{
+      "optid": "G100BOS",
+      "gameid": "G100",
+      "optname": "BOS",
+      "optodd": 1.55,
+      "optmsg": ""
+    },
+    {
+      "optid": "G100LAD",
+      "gameid": "G100",
+      "optname": "LAD",
+      "optodd": 1.95,
+      "optmsg": ""
+    }
+  ]
+}]1
