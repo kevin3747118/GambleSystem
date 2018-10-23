@@ -119,16 +119,51 @@ class Bet {
 
   static statBet(conn = null) {
     return new Promise((resolve, reject) => {
-      // let sql = ` select userid, nickname, sum(convert(money*totaloddperset, signed)) as money
-      //             from bets where status = 3 group by nickname, userid`;
-      let sql = `select a._id, a.nickname, b.win from gamble.logins a join (select userid, sum(convert(money*odd, signed)) as win
-      from gamble.tiger_user_bet where betid in (
-      select distinct betid from gamble.tiger_user_bet_option where optid in (
-      select optid from gamble.tiger_game_option where status = 1))
-      group by userid) b on a._id = b.userid`
+      let sql = `select _id, nickname, sum(case when cnt = passcnt then money else 0 end) win
+      from (
+      select a._id, a.nickname, b.betid, count(1) as cnt, sum(d.status) as passcnt, convert(b.money*b.odd, signed) as money
+      from gamble.logins a
+      join gamble.tiger_user_bet b on a._id = b.userid
+      join gamble.tiger_user_bet_option c on b.betid = c.betid
+      join gamble.tiger_game_option d on c.optid = d.optid
+      group by _id, nickname, betid) nn
+      group by _id, nickname
+      order by win desc`;
+      // let sql = `select a._id, a.nickname, b.win from gamble.logins a join (select userid, sum(convert(money*odd, signed)) as win
+      // from gamble.tiger_user_bet where betid in (
+      // select distinct betid from gamble.tiger_user_bet_option where optid in (
+      // select optid from gamble.tiger_game_option where status = 1))
+      // group by userid) b on a._id = b.userid`
       util.execSimpleSQL(conn, sql, "SEL")
         .then((res) => {
           resolve(res)
+        })
+        .catch((err) => {
+          reject(err);
+        })
+    })
+  }
+
+  static betStatus(conn = null) {
+    return new Promise((resolve, reject) => {
+      let betResults = {
+        'G100BOS': '',
+        'G100LAD': ''
+      };
+      let sqlBos = `select a.userid, c.nickname, 'Boston Red Sox' as team,a.money, a.createdate from gamble.tiger_user_bet a
+                      join gamble.tiger_user_bet_option b on a.betid = b.betid
+                      join gamble.logins c on a.userid = c._id where b.optid = 'G100BOS'`;
+      let sqlLad = `select a.userid, c.nickname, 'Los Angeles Dodgers' as team, a.money, a.createdate from gamble.tiger_user_bet a
+                      join gamble.tiger_user_bet_option b on a.betid = b.betid
+                      join gamble.logins c on a.userid = c._id where b.optid = 'G100LAD'`
+      util.execSimpleSQL(conn, sqlBos, "SEL")
+        .then((res) => {
+          betResults['G100BOS'] = res;
+          return util.execSimpleSQL(conn, sqlLad, "SEL")
+        })
+        .then((res) => {
+          betResults['G100LAD'] = res
+          resolve(betResults);
         })
         .catch((err) => {
           reject(err);

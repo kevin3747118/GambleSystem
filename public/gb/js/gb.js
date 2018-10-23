@@ -71,32 +71,37 @@ function gsPost(param, callback) {
     );
 };
 
-function loadGame() {
+//載入game
+loadGame = () => {
     $('#index-gamelist').showLoader();
     let param = {};
     param['url'] = '/getGames';
-    gsGet(param, function (games) {
+    gsGet(param, (games) => {
         if (Array.isArray(games)) {
-            //             let html =
-            //                 `<div class="row mb-3">
-            //     <div class="col-md-12">
-            //       <div class="card shadow-sm" data-gameid="{gameid}">
-            //         <div class="card-footer">
-            //           <strong class="text-primary">{gamedate}{gamename}</strong>
-            //         </div>
-            //         <div class="card-body border-top border-bottom h-md-100" data-gameid="{gameid}" data-optid="">
-            //           <div class="gb-card-team">{optname}</div>
-            //           <div>{a-pitcher} ({a-state}, {a-era})</div>
-            //           <h5 style="text-align: right">{a-odd}</h5>
-            //         </div>
-            //         <div class="card-body h-md-100" data-gameid="{gameid}" data-optid="">
-            //         <div class="gb-card-team">{optname}</div>
-            //         <div>{h-pitcher} ({h-state}, {h-era})</div>
-            //         <h5 style="text-align: right">{h-odd}</h5>
-            //         </div>
-            //       </div>
-            //     </div>
-            // </div>`;
+
+            if (games[0].gameinfo.away.playerprofile['name'] === 'TBD') {
+                $('.gb-playerprofile .gb-away').find('strong').empty().append(games[0].gameinfo.away.playerprofile['name']);
+            }
+            else {
+                let record = games[0].gameinfo.away.playerprofile['name'] + '<br/>' + games[0].gameinfo.away.playerprofile['record'];
+                $('.gb-playerprofile .gb-away').find('img').attr('src', games[0].gameinfo.away.playerprofile['pic']);
+                $('.gb-playerprofile .gb-away').find('strong').empty().append(record);
+                $('.gb-playerprofile .gb-away').find('span').empty().append(games[0].gameinfo.away.playerprofile['quote']);
+                $('.gb-playerprofile .gb-away').click(function () { window.open(games[0].gameinfo.away.playerprofile['data'], '_target'); });
+                $('.gb-playerprofile .gb-away').css("cursor:pointer");
+            }
+
+            if (games[0].gameinfo.home.playerprofile['name'] === 'TBD') {
+                $('.gb-playerprofile .gb-home').find('strong').empty().append(games[0].gameinfo.home.playerprofile['name']);
+            }
+            else {
+                let record = games[0].gameinfo.home.playerprofile['name'] + '<br/>' + games[0].gameinfo.home.playerprofile['record'];
+                $('.gb-playerprofile .gb-home').find('img').attr('src', games[0].gameinfo.home.playerprofile['pic']);
+                $('.gb-playerprofile .gb-home').find('strong').empty().append(record);
+                $('.gb-playerprofile .gb-home').find('span').empty().append(games[0].gameinfo.home.playerprofile['quote']);
+                $('.gb-playerprofile .gb-home').click(() => { window.open(games[0].gameinfo.home.playerprofile['data'], '_target'); });
+                $('.gb-playerprofile .gb-home').css({ "cursor": "pointer" });
+            }
 
             let outerHtml =
                 `<div class="row mb-3">
@@ -114,17 +119,18 @@ function loadGame() {
                 `<div class="card-body border-top border-bottom h-md-100" data-optid="{optid}" data-gameid="{gameid}" data-optname="{optname}" data-optodd="{optodd}">
     <div class="gb-card-team">{optname}</div>
         <div>{optmsg}</div>
+        <span class="gb-card-user"></span>
         <h5 style="text-align: right">{optodd}</h5>
 </div>`;
 
             try {
-                $.each(games, function (idx, game) {
+                $.each(games, (idx, game) => {
                     let gamename = (game['gamedate']) ? '' : (game['gamedate'] + '&nbsp;');
                     gamename += game['gamename'];
                     let outer = outerHtml.replaceAll('{gameid}', game['gameid']);
                     outer = outer.replaceAll('{gamename}', game['gamename']);
                     let inner = '';
-                    $.each(game['option'], function (idx, option) {
+                    $.each(game['option'], (idx, option) => {
                         let opt = innerHtml.replaceAll('{optid}', option['optid']);
                         opt = opt.replaceAll('{gameid}', option['gameid']);
                         opt = opt.replaceAll('{optname}', option['optname']);
@@ -136,63 +142,58 @@ function loadGame() {
                     outer = outer.replaceAll('{optionhtml}', inner);
                     $('#index-gamelist').append(outer);
                 });
-                // Object.keys(data).forEach(function eachKey(gameid) {
-                //     let game = html.replaceAll('{gameid}', gameid);
-                //     game = game.replaceAll('{gamedate}', data[gameid]['gamedate']);
-                //     game = game.replaceAll('{a}', data[gameid]['game']['a']);
-                //     game = game.replaceAll('{h}', data[gameid]['game']['h']);
-                //     game = game.replaceAll('{a-team}', data[gameid]['game']['a'][0]);
-                //     game = game.replaceAll('{a-pitcher}', data[gameid]['competitors']['a'][0]);
-                //     game = game.replaceAll('{a-state}', data[gameid]['competitors']['a'][1]);
-                //     game = game.replaceAll('{a-era}', data[gameid]['competitors']['a'][2]);
-                //     game = game.replaceAll('{a-odd}', data[gameid]['game']['a'][2]);
-                //     game = game.replaceAll('{h-team}', data[gameid]['game']['h'][0]);
-                //     game = game.replaceAll('{h-pitcher}', data[gameid]['competitors']['h'][0]);
-                //     game = game.replaceAll('{h-state}', data[gameid]['competitors']['h'][1]);
-                //     game = game.replaceAll('{h-era}', data[gameid]['competitors']['h'][2]);
-                //     game = game.replaceAll('{h-odd}', data[gameid]['game']['h'][2]);
-                //     $('#index-gamelist').append(game);
-                // });
                 //
                 $('#index-gamelist .card-body').click(selectGame);
-                $('#index-aside input[name="combination"]').click(function () {
-                    let list = $('#index-aside li');
-                    if (this.value === '1') { //單場
-                        $(list.get(list.length - 4)).hide();
-                        $(list.find('.game-money')).show();
-                    } else { //過關
-                        $(list.get(list.length - 4)).show();
-                        $(list.find('.game-money')).hide();
-                    }
-                    setMoney();
-                    // if ($(this).is(':checked')) {
-                    //     alert($(this).val());
-                    // }
-                });
-                gsTask(function () {
-                    let param = {};
-                    param['url'] = '/gbApi/countgameplays';
-                    gsGet(param, function (list) {
-                        let json = {};
-                        $.each(list, function (idx, data) {
-                            json[data['gameid']] = data["count"];
-                        });
-                        let games = $('div.card[data-gameid]');
-                        $.each(games, function (idx, game) {
-                            let gameid = $(game).attr('data-gameid');
-                            if (json[gameid] == null || json[gameid] == '')
-                                $(game).find('.card-footer span').empty().append('已投注人數:&nbsp;0&nbsp;人');
-                            else
-                                $(game).find('.card-footer span').empty().append('已投注人數:&nbsp;' + json[gameid] + '&nbsp;人');
-                        });
-                    });
+                $('#index-aside input[name="combination"]').click(selectCombination);
+                gsTask(() => {
+                    $.get('/countgames', {},
+                        (data, status) => {
+                            if (status === "success") {
+                                if (data.status === 'ok') {
+                                    let json = {};
+                                    $.each(data.data, function (idx, item) {
+                                        json[item['gameid']] = item["count"];
+                                    });
+                                    let games = $('div.card[data-gameid]');
+                                    $.each(games, function (idx, game) {
+                                        let gameid = $(game).attr('data-gameid');
+                                        if (json[gameid] == null || json[gameid] == '')
+                                            $(game).find('.card-footer span').empty().append('已投注人數:&nbsp;0&nbsp;人');
+                                        else
+                                            $(game).find('.card-footer span').empty().append('已投注人數:&nbsp;' + json[gameid] + '&nbsp;人');
+                                    });
+                                }
+                            }
+                        }
+                    );
                 }, 5);
+                gsTask(betstatus, 5);
                 // {"status":"ok","data":[{"gameid":"G10","count":3},{"gameid":"G100","count":2},{"gameid":"G20","count":3},{"gameid":"G50","count":1}]}
                 $('#index-gamelist').hideLoader();
             } catch {
             }
         }
     });
+};
+
+function betstatus() {
+    $.get('/getbetstatus', {},
+        (data, status) => {
+            if (status === "success") {
+                if (data.status === 'ok') {
+                    Object.keys(data.data).forEach((key) => {
+                        let userid = '';
+                        data.data[key].forEach((user) => {
+                            userid += ((user['nickname'] === '') ? '' : user['nickname']) + '($' + user['money'] + '), ';
+                        });
+                        userid = userid.trim();
+                        userid = userid.substring(0, userid.length - 1);
+                        $('div.card-body[data-optid="' + key + '"]').find('span.gb-card-user').html(userid);
+                    });
+                }
+            }
+        }
+    );
 };
 
 function selectGame() {
@@ -257,6 +258,18 @@ function selectGame() {
     }
     //
     $('input[name="money"]').on('keyup', setMoney);
+    setMoney();
+};
+
+function selectCombination() {
+    let list = $('#index-aside li');
+    if (this.value === '1') { //單場
+        $(list.get(list.length - 4)).hide();
+        $(list.find('.game-money')).show();
+    } else { //過關
+        $(list.get(list.length - 4)).show();
+        $(list.find('.game-money')).hide();
+    }
     setMoney();
 };
 

@@ -8,7 +8,7 @@
   <meta name="author" content="">
   <link rel="icon" href="https://www.mlbstatic.com/mlb.com/builds/site-core/e10a7b41dbb151e6fe4c4a7a4425260df506cac9_1539117300/images/favicon.png">
 
-  <title>GambleSystem</title>
+  <title>World Champion</title>
 
   <!-- Bootstrap core CSS -->
   <link href="gb/css/bootstrap.min.css" rel="stylesheet">
@@ -28,9 +28,11 @@
           <!-- <span class="px-2 text-dark">分區對戰圖</span> -->
           <a href="#"><img class="mlb-logo" src="gb/img/mlb_logo.png" /></a>
           <!-- <span class="px-2 text-dark"></span> -->
-          <div><span id="index-user"></span>&nbsp;&nbsp;<a class="px-2 text-dark" href="#" data-toggle="modal"
-              data-target="#history-modal">投注紀錄</a>&nbsp;&nbsp;
-            <a class="px-2 text-dark" href="#" onclick="fnLogout()">登出</a></div>
+          <div><span id="index-user"></span>&nbsp;&nbsp;
+            <a id="index-btnhistory" class="px-2 text-dark" href="#" onclick="fnHistory()" style="display:none;">投注紀錄</a>&nbsp;&nbsp;
+            <a id="index-btnlogin" class="px-2 text-dark" href="#" data-toggle="modal" data-target="#login-modal">登入</a>
+            <a id="index-btnlogout" class="px-2 text-dark" href="#" onclick="fnLogout()" style="display:none;">登出</a>
+          </div>
         </div>
       </div>
 
@@ -53,13 +55,37 @@
         <a class="p-2 text-muted" href="#">今天</a>
       </nav>
     </div> -->
-
-    <div class="row mb-2" style="overflow-y: scroll;">
-      <img src="https://securea.mlb.com/assets/images/4/1/8/298077418/cuts/768x432/cut.jpg" class="rounded mx-auto d-block"
-        alt="Bracket">
+    <div class="container my-3">
+      <div class="row text-center">
+        <div class="col-md-12 text-center">
+          <a href="https://www.foxsports.com.tw/videos/10-21-%E6%97%A5-0800-%E9%81%93%E5%A5%87vs-%E9%87%80%E9%85%92%E4%BA%BA-g7/" target="_blank"><img src="gb/img/mlb.png" /></a>
+          <!-- <iframe width="100%" height="500" allowfullscreen src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe> -->
+        </div>
+      </div>
     </div>
 
-    <marquee behavior="scroll" direction="right" scrollamount="6">開賽前，投注人數>2，該投注場次才算成立！！誠心勿鬧！</marquee>
+    <div class="gb-playerprofile container my-3">
+      <div class="row">
+        <div class="col-md-6 text-center gb-away">
+          <img src="https://prod-gameday.mlbstatic.com/responsive-gameday-assets/1.2.0/images/players/summary_photo_default.svg"
+            width="510" height="330" />
+          <br>
+          <strong></strong>
+          <br>
+          <span></span>
+        </div>
+        <div class="col-md-6 text-center gb-home">
+          <img src="https://prod-gameday.mlbstatic.com/responsive-gameday-assets/1.2.0/images/players/summary_photo_default.svg"
+            width="510" height="330">
+          <br>
+          <strong></strong>
+          <br>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- <marquee behavior="scroll" direction="right" scrollamount="6">開賽前，投注人數>2，該投注場次才算成立！！誠心勿鬧！</marquee> -->
 
     <main role="main" class="container">
       <div class="row">
@@ -97,7 +123,7 @@
               <label><input type="radio" name="combination" value="1" checked> 單場投注</label>
             </li>
             <li class="list-group-item">
-              <label><input type="radio" name="combination" value="2"> 過關</label>
+              <label><input type="radio" name="combination" value="2" disabled> 過關</label>
             </li>
             <li class="list-group-item bg-light text-center text-primary">已選擇賽事</li>
             <li class="list-group-item text-center">請選擇賽事</li>
@@ -330,8 +356,12 @@
               if (status === 'success') {
                 if (data.status === 'ok') {
                   window.alert('投注成功!');
-                  loadHistory();
-                  $('#history-modal').modal('show');
+                  betstatus();
+                  fnHistory();
+                  $('.card-body').removeClass('bg-warning');
+                  $('#index-aside li[data-optid]').remove();
+                  $('#index-aside li.gs-moneys').empty().append('投注總金額 0 元');
+                  $('#index-aside li.gs-earns').empty().append('最高可贏 0 元');
                 } else {
                   window.alert('請先登入!');
                 }
@@ -339,12 +369,16 @@
             });
           }
         }
+        else {
+          window.alert('請先登入!');
+        }
         return (false);
       };
 
-      function loadHistory() {
+      function fnHistory() {
         let user = GetUser();
         if (user != null) {
+          $('#history-modal').modal('show');
           $('#index-history tbody tr:not(:first)').empty();
           $.post('/gbApi/GetPersonalBet', { 'userid': user['_id'] },
             function (data, status) {
@@ -364,35 +398,16 @@
             }
           );
         }
-      }
-
-      // function gsGet(param, callback) {
-      //   $.get(param['url'], { data: param['data'] },
-      //     function (data, status) {
-      //       if (status === 'success') {
-      //         if (data.status === 'ok') {
-      //           let json = JSON.parse(data.data);
-      //           if (typeof callback === 'function') {
-      //             callback(json);
-      //           } else {
-      //             return json;
-      //           }
-      //         } else {
-      //           // alert("");
-      //         }
-      //       }
-      //     }
-      //   );
-      // };
+      };
 
       $(document).ready(function () {
         loadGame();
-        loadHistory();
         let user = GetUser();
         if (user != null) {
           $('#index-user').append("HI! " + user['nickname']);
-        } else {
-          $('#login-modal').modal('show');
+          $('#index-btnhistory').show();
+          $('#index-btnlogin').hide();
+          $('#index-btnlogout').show();
         }
       });
 

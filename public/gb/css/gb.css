@@ -51,6 +51,11 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+.gb-card-user{
+  font-size: 12px;
+  color: gray;
+}
+
 @media (max-width: 480px) {
   .mlb-logo {
     width: 40px;

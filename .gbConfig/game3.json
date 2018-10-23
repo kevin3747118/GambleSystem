@@ -1,0 +1,40 @@
+[{
+  "gameid": "G100",
+  "gamename": "MLB World Champion",
+  "gamedate": "",
+  "option": [{
+      "optid": "G100BOS",
+      "gameid": "G100",
+      "optname": "Boston Red Sox",
+      "optodd": 1.55,
+      "optmsg": ""
+    },
+    {
+      "optid": "G100LAD",
+      "gameid": "G100",
+      "optname": "Los Angeles Dodgers",
+      "optodd": 1.95,
+      "optmsg": ""
+    }
+  ],
+  "gameinfo": {
+    "home": {
+      "playerprofile": {
+        "name": "Chris Sale, LHP #41",
+        "pic": "https://securea.mlb.com/images/players/525x330/519242.jpg",
+        "record": "12-4 2.11 ERA 237 K",
+        "data": "https://www.mlb.com/player/chris-sale-519242",
+        "quote": "The ace is ready to experience the thrill of pitching in the World Series for the first time. Sale will try to avenge his laborious start in Game 1 of the ALCS. This will be his first matchup vs. the Dodgers since a 2012 no-decision in L.A."
+      }
+    },
+    "away": {
+      "playerprofile": {
+        "name": "TBD",
+        "pic": "",
+        "record": "",
+        "data": "",
+        "quote": ""
+      }
+    }
+  }
+}]
