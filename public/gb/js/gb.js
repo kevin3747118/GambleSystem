@@ -88,7 +88,7 @@ loadGame = () => {
                 $('.gb-playerprofile .gb-away').find('strong').empty().append(record);
                 $('.gb-playerprofile .gb-away').find('span').empty().append(games[0].gameinfo.away.playerprofile['quote']);
                 $('.gb-playerprofile .gb-away').click(function () { window.open(games[0].gameinfo.away.playerprofile['data'], '_target'); });
-                $('.gb-playerprofile .gb-away').css("cursor:pointer");
+                $('.gb-playerprofile .gb-away').css({ "cursor": "pointer" });
             }
 
             if (games[0].gameinfo.home.playerprofile['name'] === 'TBD') {
@@ -184,7 +184,7 @@ function betstatus() {
                     Object.keys(data.data).forEach((key) => {
                         let userid = '';
                         data.data[key].forEach((user) => {
-                            userid += ((user['nickname'] === '') ? '' : user['nickname']) + '($' + user['money'] + '), ';
+                            userid += ((user['nickname'] === '') ? '' : user['nickname']) + ' ' + '($' + user['money'] + '), ';
                         });
                         userid = userid.trim();
                         userid = userid.substring(0, userid.length - 1);

@@ -29,11 +29,11 @@
     },
     "away": {
       "playerprofile": {
-        "name": "TBD",
-        "pic": "",
-        "record": "",
-        "data": "",
-        "quote": ""
+        "name": "Clayton Kershaw, LHP #22",
+        "pic": "https://securea.mlb.com/images/players/525x330/alt/477132.jpg",
+        "record": "9-5 2.73 ERA 155 K",
+        "data": "https://www.mlb.com/player/clayton-kershaw-477132",
+        "quote": "Kershaw employed his breaking balls masterfully while winning Game 5 and closing out Game 7 of the NLCS, and he got some extra prep work in the Fenway Park bullpen Sunday. The ace struck out 11 Astros while winning Game 1 of the 2017 World Series."
       }
     }
   }

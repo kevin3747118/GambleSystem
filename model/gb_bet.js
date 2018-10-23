@@ -173,7 +173,7 @@ class Bet {
 
   static getPersonalBet(conn = null, id) {
     return new Promise((resolve, reject) => {
-      let sql = `select d.gamename, a.combination, a.money, a.odd, c.status, a.createdate
+      let sql = `select d.gamename, c.optname, a.money, a.odd, a.createdate
       from tiger_user_bet a
       left join tiger_user_bet_option b on a.betid = b.betid
       left join tiger_game_option c on b.optid = c.optid

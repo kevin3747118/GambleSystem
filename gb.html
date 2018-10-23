@@ -28,8 +28,9 @@
           <!-- <span class="px-2 text-dark">分區對戰圖</span> -->
           <a href="#"><img class="mlb-logo" src="gb/img/mlb_logo.png" /></a>
           <!-- <span class="px-2 text-dark"></span> -->
-          <div><span id="index-user"></span>&nbsp;&nbsp;
-            <a id="index-btnhistory" class="px-2 text-dark" href="#" onclick="fnHistory()" style="display:none;">投注紀錄</a>&nbsp;&nbsp;
+          <span id="index-user"></span>
+          <div>
+            <a id="index-btnhistory" class="px-2 text-dark" href="#" onclick="fnHistory()" style="display:none;">投注紀錄</a>
             <a id="index-btnlogin" class="px-2 text-dark" href="#" data-toggle="modal" data-target="#login-modal">登入</a>
             <a id="index-btnlogout" class="px-2 text-dark" href="#" onclick="fnLogout()" style="display:none;">登出</a>
           </div>
@@ -65,9 +66,9 @@
       </div>
     </div>
 
-    <div class="gb-playerprofile container my-3">
+    <div class="gb-playerprofile container mb-2">
       <div class="row">
-        <div class="col-md-6 text-center gb-away">
+        <div class="col-md-6 text-center gb-away my-2">
           <img src="https://prod-gameday.mlbstatic.com/responsive-gameday-assets/1.2.0/images/players/summary_photo_default.svg"
             width="510" height="330" />
           <br>
@@ -75,7 +76,7 @@
           <br>
           <span></span>
         </div>
-        <div class="col-md-6 text-center gb-home">
+        <div class="col-md-6 text-center gb-home my-2">
           <img src="https://prod-gameday.mlbstatic.com/responsive-gameday-assets/1.2.0/images/players/summary_photo_default.svg"
             width="510" height="330">
           <br>
@@ -162,7 +163,7 @@
 
     <!--Login Model-->
     <div id="login-modal" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-      aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      aria-hidden="true" data-keyboard="false">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <!-- <div class="modal-header">
@@ -226,14 +227,16 @@
               <col width="100">
               <col width="100">
               <col width="100">
+              <!-- <col width="100"> -->
               <tbody>
                 <tr>
                   <th class="border">日期</th>
                   <th class="border">玩法</th>
+                  <th class="border">投注主題</th>
                   <th class="border">投注項目</th>
                   <th class="border">金額</th>
                   <th class="border">賠率</th>
-                  <th class="border">結果</th>
+                  <!-- <th class="border">結果</th> -->
                 </tr>
               </tbody>
             </Table>
@@ -390,8 +393,8 @@
                     <td class="border">{2}</td><td class="border">{3}</td><td class="border">{4}</td>
                     <td class="border">{5}</td></tr>`;
                     var row = String.format(html, rec['createdate'],
-                      (rec['combination'] === '1') ? '單場投注' : '過關', rec['gamename'], rec['money'],
-                      rec['odd'], (rec['status'] == 1) ? 'V' : '');
+                      (rec['combination'] === '1') ? '單場投注' : '過關', rec['gamename'], rec['optname'], rec['money'], rec['odd']);
+                      // rec['odd'], (rec['status'] == 1) ? 'V' : '');
                     $('#index-history tbody').append(row);
                   });
                 }
@@ -405,7 +408,7 @@
         loadGame();
         let user = GetUser();
         if (user != null) {
-          $('#index-user').append("HI! " + user['nickname']);
+          $('#index-user').append('HI! ' + user['nickname'] + ' 你今天投注了嗎？');
           $('#index-btnhistory').show();
           $('#index-btnlogin').hide();
           $('#index-btnlogout').show();
