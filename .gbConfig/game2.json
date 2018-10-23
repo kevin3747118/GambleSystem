@@ -85,28 +85,28 @@
     "option": [{
         "optid": "G100HOU",
         "gameid": "G100",
-        "optname": "HOU",
+        "optname": "Huston Astros",
         "optodd": 3.25,
         "optmsg": "去年世界冠軍!!"
       },
       {
         "optid": "G100BOS",
         "gameid": "G100",
-        "optname": "BOS",
+        "optname": "Boston Red Sox",
         "optodd": 2.25,
         "optmsg": ""
       },
       {
         "optid": "G100MIL",
         "gameid": "G100",
-        "optname": "MIL",
+        "optname": "Milwaukee Brewers",
         "optodd": 4.25,
         "optmsg": "YELICH大爆發"
       },
       {
         "optid": "G100LAD",
         "gameid": "G100",
-        "optname": "LAD",
+        "optname": "Los Angeles Dodgers",
         "optodd": 3.10,
         "optmsg": ""
       }
