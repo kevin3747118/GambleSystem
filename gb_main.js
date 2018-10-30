@@ -100,21 +100,21 @@ function startGBServer() {
       next();
   });
 
-  gbApp.get('/.well-known/acme-challenge/dxvL0uqaQcLfBy1MhZMl_IsZUeFid4lNNQ4_qhlJmM8', (req, res, next) => {
-    res.set('Content-Type', 'text/html');
-    res.sendFile(__dirname + "\\.well-known\\acme-challenge\\dxvL0uqaQcLfBy1MhZMl_IsZUeFid4lNNQ4_qhlJmM8", 'utf8', function (err) { // change path
-      if (err)
-        logger.error("dg page load error:" + err);
-    });
-  })
+  // gbApp.get('/.well-known/acme-challenge/dxvL0uqaQcLfBy1MhZMl_IsZUeFid4lNNQ4_qhlJmM8', (req, res, next) => {
+  //   res.set('Content-Type', 'text/html');
+  //   res.sendFile(__dirname + "\\.well-known\\acme-challenge\\dxvL0uqaQcLfBy1MhZMl_IsZUeFid4lNNQ4_qhlJmM8", 'utf8', function (err) { // change path
+  //     if (err)
+  //       logger.error("dg page load error:" + err);
+  //   });
+  // })
 
-  gbApp.get('/.well-known/acme-challenge/DzHntGxE2e6hTvBKSb57ou-KKt3r7QyLuLx7D7kQZSE', (req, res, next) => {
-    res.set('Content-Type', 'text/plain');
-    res.sendFile(__dirname + "\\.well-known\\acme-challenge\\DzHntGxE2e6hTvBKSb57ou-KKt3r7QyLuLx7D7kQZSE", 'utf8', function (err) { // change path
-      if (err)
-        logger.error("dg page load error:" + err);
-    });
-  })
+  // gbApp.get('/.well-known/acme-challenge/DzHntGxE2e6hTvBKSb57ou-KKt3r7QyLuLx7D7kQZSE', (req, res, next) => {
+  //   res.set('Content-Type', 'text/plain');
+  //   res.sendFile(__dirname + "\\.well-known\\acme-challenge\\DzHntGxE2e6hTvBKSb57ou-KKt3r7QyLuLx7D7kQZSE", 'utf8', function (err) { // change path
+  //     if (err)
+  //       logger.error("dg page load error:" + err);
+  //   });
+  // })
 
   gbApp.get('/', function (req, res) {
     res.redirect('/worldchampion')
