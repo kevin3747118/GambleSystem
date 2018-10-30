@@ -281,10 +281,10 @@ function startGBServer() {
     requestCert: false,
     rejectUnauthorized: false
   };
-  // const httpsServer = https.createServer(credentials, gbApp).listen(gbConsts.PORT_GB, () => {
-  //   logger.debug('Gamble System server listening on port : ' + gbConsts.PORT_GB);
-  // });
-  gbApp.listen(gbConsts.PORT_GB);
+  const httpsServer = https.createServer(credentials, gbApp).listen(gbConsts.PORT_GB, () => {
+    logger.debug('Gamble System server listening on port : ' + gbConsts.PORT_GB);
+  });
+  // gbApp.listen(gbConsts.PORT_GB);
 }
 
 function main() {
